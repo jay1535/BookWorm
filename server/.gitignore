@@ -40,5 +40,9 @@ Thumbs.db
 *.temp
 *.bak
 
+# Config files
+config/
+
+
 # Misc
 *.lock
