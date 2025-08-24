@@ -65,7 +65,7 @@ userSchema.methods.generateVerificationCode = function(){
 
     this.verificationCodeExpire = Date.now() +15 *60 *1000;
     return verificationCode;
-
-
 }
+
+
 export const User = mongoose.model("User", userSchema);
