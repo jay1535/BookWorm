@@ -3,9 +3,9 @@ import { User } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { sendVerificationCode } from "../utils/sendVerificationCode.js";
+import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 
-
-export const register = catchAsyncErrors(async (req, res, next) => {
+const register = catchAsyncErrors(async (req, res, next) => {
 try {
     const {name, email, password} = req.body;
     if (!name || !email || !password) {
@@ -49,5 +49,5 @@ catch (error) {
      next(error);
 }
 
-
 })
+export default register;
