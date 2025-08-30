@@ -1,8 +1,9 @@
 import express from "express";
-import { catchAsyncErrors } from "../middlewares/catchAsyncErrors";
+
 import {Book} from "../models/bookModel.js"
 import {User} from "../models/userModel.js"
-import ErrorHandler from "../middlewares/errorMiddlewares";
+import ErrorHandler from "../middlewares/errorMiddlewares.js";
+import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 
 
 export const addBook = catchAsyncErrors(async (req, res, next) => {
