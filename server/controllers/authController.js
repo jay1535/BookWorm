@@ -215,4 +215,39 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     await user.save();
     sendToken(user, 200, "Password reset Successfully.", res);
 })
+
+
+export const updatePassword = catchAsyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.user._id).select("+password");
+    const {currentPassword, newPassword, confirmNewPassword} = req.body;
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+        return next(new ErrorHandler("Please provide all fields", 400));
+    }
+
+    
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+        return next(new ErrorHandler("Current Password is incorrect", 400));
+    }
+
+    if (newPassword.length < 8 || newPassword.length > 16) {
+        return next(new ErrorHandler("Password must be between 8 and 16 characters", 400));
+    }
+
+    if (newPassword !== confirmNewPassword) {
+        return next(new ErrorHandler("New Password and Confirm Password do not match", 400));
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+    });
+
+    // sendToken(user, 200, "Password updated successfully", res);
+})
+
 // *******************************************************************//
