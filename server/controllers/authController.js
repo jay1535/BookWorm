@@ -5,6 +5,8 @@ import crypto from "crypto";
 import { sendVerificationCode } from "../utils/sendVerificationCode.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { sendToken } from "../utils/sendToken.js";
+import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplates.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 
 //*******Authentication Controllers************//
@@ -151,3 +153,41 @@ export const getUser = catchAsyncErrors(async (req, res, next) => {
 
 
 })
+
+// *********************************************************************//
+
+//************************ Password Management ************************//
+
+export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+    if (!req.body.email) {
+        return next(new ErrorHandler("Please provide email", 400));
+    }
+    const user = await User.findOne({ email: req.body.email, accountVerified: true });
+    if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+    }
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+    const resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
+    const message = generateForgotPasswordEmailTemplate(resetPasswordUrl);
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: "BookWorm Password Recovery",
+            message,
+        });
+        res.status(200).json({
+            success: true,
+            message: `Email sent to ${user.email} successfully`,
+        });
+        
+    } catch (error) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save({ validateBeforeSave: false });
+        return next(new ErrorHandler(error.message, 500));  
+    }
+});
+
+// *******************************************************************//
