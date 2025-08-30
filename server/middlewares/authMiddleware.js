@@ -13,3 +13,15 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
     next();
 
 })
+
+export const isAuthorized = (...roles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return next(new ErrorHandler("Not authorized to access this resource", 403));
+        }
+        if (!roles.includes(req.user.role)) {
+            return next(new ErrorHandler("You do not have permission to perform this action", 403));
+        }
+        next();
+    };
+};
