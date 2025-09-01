@@ -50,3 +50,4 @@ export function generateForgotPasswordEmailTemplate(resetPasswordUrl) {
   </div>
   `;
 }
+

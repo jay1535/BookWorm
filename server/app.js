@@ -9,6 +9,7 @@ import bookRouter from "./routes/bookRouter.js"
 import borrowRouter from "./routes/borrowRouter.js"
 import fileUpload from "express-fileupload"
 import userRouter from './routes/userRouter.js';
+import {  notifyUsers } from './services/notifyUsers.js';
 
 export const app = express();
 config({path:"./config/config.env"});
@@ -37,6 +38,7 @@ app.use("/api/v1/user",userRouter)
 
 
 connectDB();
+notifyUsers();
 
 
 app.use(errorMiddleware);
