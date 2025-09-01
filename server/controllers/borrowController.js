@@ -7,13 +7,13 @@ import { calculateFine } from "../utils/fineCalculator.js";
 
 // 📌 Get all borrowed books by logged-in user
 export const borrowedBooks = catchAsyncErrors(async (req, res, next) => {
-  const books = await Borrow.find({ "user.id": req.user.id }).populate("book.id");
-  res.status(200).json({
-    status: "success",
-    results: books.length,
-    data: { books },
-  });
+const {borrowedBooks} = req.user;
+res.status(200).json({
+  success: true,
+  borrowedBooks
 });
+});
+
 
 // 📌 Record borrowing a book
 export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
@@ -83,15 +83,11 @@ export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
 
 // 📌 Admin fetch borrowed book by borrowId
 export const getBorrowedBooksForAdmin = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.params; // borrow record id
-  const book = await Borrow.findById(id).populate("book.id");
-
-  if (!book) return next(new ErrorHandler("Borrow record not found", 404));
-
-  res.status(200).json({
-    status: "success",
-    data: { book },
-  });
+  const borrowedBooks = await Borrow.find();
+ res.status(200).json({
+  success :true,
+  borrowedBooks,
+});
 });
 
 // 📌 Return a borrowed book
@@ -109,7 +105,7 @@ export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
     (b) => b.bookId.toString() === id && b.returned === false
   );
   if (!borrowedBook) {
-    return next(new ErrorHandler("This book is not borrowed by the user", 400));
+    return next(new ErrorHandler("You have not borrowed this book.", 400));
   }
 
   borrowedBook.returned = true;

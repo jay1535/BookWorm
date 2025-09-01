@@ -12,8 +12,8 @@ const router = express.Router();
 // User borrows a book
 router.post("/record-borrowed-book/:id", isAuthenticated, recordBorrowedBook);
 
-// Admin fetch borrow record by ID
-router.get("/borrowed-books/:id", isAuthenticated, isAuthorized("Admin"), getBorrowedBooksForAdmin);
+// Admin fetch all borrowed books
+router.get("/borrowed-books-by-users", isAuthenticated, isAuthorized("Admin"), getBorrowedBooksForAdmin);
 
 // User gets all borrowed books
 router.get("/my-borrowed-books", isAuthenticated, borrowedBooks);
