@@ -87,6 +87,18 @@ const authSlice = createSlice({
         },
 
 
+
+        //RESET AUTH SLICE
+        resetAuthSlice: (state) => {
+            state.loading = false;
+            state.error = null;
+            state.user = null;
+            state.message = null;
+            state.isAuthenticated = false;
+        }
+
+
+
     }
 
 });
@@ -157,10 +169,18 @@ export const logout = () => async (dispatch) => {
         dispatch(authSlice.actions.logoutSuccess(
             res.data
         ))
+        dispatch(authSlice.actions.resetAuthSlice());
     }
     ).catch((error) => {
         dispatch(authSlice.actions.logoutFailure(error.response.data.message))
     }
     )
 }
+
+
+//RESET AUTH
+export const resetAuthSlice = () => (dispatch) => {
+    dispatch(authSlice.actions.resetAuthSlice());
+}
+
 
