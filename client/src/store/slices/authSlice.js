@@ -86,6 +86,40 @@ const authSlice = createSlice({
             state.message = null;
         },
 
+        //GET USER REQUEST
+        getUserRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+            state.message = null;
+        },
+         getUserSuccess: (state, action) => {
+            state.loading = false;
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
+        },
+         getUserFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+            state.isAuthenticated = false;
+            state.user = null;
+        },
+
+        //Forgot Password
+        forgotPasswordRequest: (state) => { 
+            state.loading = true;
+            state.error = null;
+            state.message = null;
+        },
+        forgotPasswordSuccess: (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+        },
+        forgotPasswordFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+            state.message = null;
+        },
+
 
 
         //RESET AUTH SLICE
@@ -183,4 +217,37 @@ export const resetAuthSlice = () => (dispatch) => {
     dispatch(authSlice.actions.resetAuthSlice());
 }
 
+//GET USER
+export const getUser = () => async (dispatch) => {
+    dispatch(authSlice.actions.getUserRequest());
+    await axios.get("/api/v1/auth/user", {
+        withCredentials: true,
+    }).then((res) => {
+        dispatch(authSlice.actions.getUserSuccess(
+            res.data
+        ))
+    }
+    ).catch((error) => {
+        dispatch(authSlice.actions.getUserFailure(error.response.data.message))
+    }
+    )
+}
 
+//FORGOT PASSWORD
+export const forgotPassword = (email) => async (dispatch) => {
+    dispatch(authSlice.actions.forgotPasswordRequest());
+    await axios.post("/api/v1/auth/password/forgot", { email }, {
+        withCredentials: true,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((res) => {
+        dispatch(authSlice.actions.forgotPasswordSuccess(
+            res.data
+        ))
+    }
+    ).catch((error) => {
+        dispatch(authSlice.actions.forgotPasswordFailure(error.response.data.message))
+    }
+    )
+}
