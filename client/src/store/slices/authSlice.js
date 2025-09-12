@@ -129,6 +129,24 @@ const authSlice = createSlice({
             state.user = null;
             state.message = null;
             state.isAuthenticated = false;
+        },
+
+        //RESET PASSWORD
+        resetPasswordRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+            state.message = null;
+        },
+        resetPasswordSuccess: (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
+        },
+        resetPasswordFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+            state.message = null;
         }
 
 
@@ -248,6 +266,25 @@ export const forgotPassword = (email) => async (dispatch) => {
     }
     ).catch((error) => {
         dispatch(authSlice.actions.forgotPasswordFailure(error.response.data.message))
+    }
+    )
+}
+
+//RESET PASSWORD
+export const resetPassword = (token, data) => async (dispatch) => {
+    dispatch(authSlice.actions.resetPasswordRequest());
+    await axios.put(`/api/v1/auth/password/reset/${token}`,data, {
+        withCredentials: true,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((res) => {
+        dispatch(authSlice.actions.resetPasswordSuccess(
+            res.data
+        ))
+    }
+    ).catch((error) => {
+        dispatch(authSlice.actions.resetPasswordFailure(error.response.data.message))
     }
     )
 }
