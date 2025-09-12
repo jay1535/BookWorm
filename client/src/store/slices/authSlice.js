@@ -147,7 +147,24 @@ const authSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.message = null;
-        }
+        },
+
+
+        //Update Password
+        updatePasswordRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+            state.message = null;
+        },
+        updatePasswordSuccess: (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+        },
+        updatePasswordFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+            state.message = null;
+        },
 
 
 
@@ -286,5 +303,24 @@ export const resetPassword = (token, data) => async (dispatch) => {
     ).catch((error) => {
         dispatch(authSlice.actions.resetPasswordFailure(error.response.data.message))
     }
+    )
+}
+
+//UPDATE PASSWORD
+export const updatePassword = (data) => async (dispatch) => {
+    dispatch(authSlice.actions.updatePasswordRequest());
+    await axios.put("/api/v1/auth/password/update", data, {
+        withCredentials: true,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((res) => {
+        dispatch(authSlice.actions.updatePasswordSuccess(
+            res.data
+        ))
+    }
+    ).catch((error) => {
+        dispatch(authSlice.actions.updatePasswordFailure(error.response.data.message))
+    }       
     )
 }
