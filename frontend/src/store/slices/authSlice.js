@@ -1,4 +1,4 @@
-import { } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const authSlice = createSlice({
@@ -324,3 +324,6 @@ export const updatePassword = (data) => async (dispatch) => {
     }       
     )
 }
+
+
+export default authSlice.reducer;
