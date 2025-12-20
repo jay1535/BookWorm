@@ -10,22 +10,21 @@ import usersIcon from "../assets/people.png";
 import { RiAdminFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, resetAuthSlice } from "../store/slices/authSlice";
-import {toast} from "react-toastify";
-import { toggleAddNewAdminPopup, toggleSettingPopup } from "../store/slices/popUpSlice";
+import { toast } from "react-toastify";
+import {
+  toggleAddNewAdminPopup,
+  toggleSettingPopup,
+} from "../store/slices/popUpSlice";
 import AddNewAdmin from "../popups/AddNewAdmin";
 
 const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
   const dispatch = useDispatch();
   const { addNewAdminPopup } = useSelector((state) => state.popup);
-  const { loading, error, message, isAuthenticated, user } = useSelector(
+  const { error, message, isAuthenticated, user } = useSelector(
     (state) => state.auth
   );
 
   const [active, setActive] = useState("Dashboard");
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
 
   useEffect(() => {
     if (error) {
@@ -36,50 +35,53 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
       toast.success(message);
       dispatch(resetAuthSlice());
     }
-  }, [dispatch, isAuthenticated, error, loading, message]);
+  }, [dispatch, error, message]);
 
   const menuBase =
-    "relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300";
+    "group relative w-full flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300";
+
+  const activeStyle =
+    "bg-white text-black shadow-xl scale-[1.02]";
+
+  const idleStyle =
+    "text-white/70 hover:bg-white/10 hover:translate-x-1";
 
   return (
     <>
       <aside
         className={`
-          fixed md:relative z-40
-          h-screen w-72
+          fixed md:relative z-40 h-screen w-72
           bg-linear-to-b from-[#0A0A0A] via-[#121212] to-[#0A0A0A]
           text-white flex flex-col
-          border-r border-white/10
-          transition-transform duration-500 ease-in-out
+          border-r border-white/10 backdrop-blur-xl
+          transition-transform duration-500
           ${isSideBarOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
         `}
       >
-        {/* ================= LOGO ================= */}
+        {/* LOGO */}
         <div className="flex flex-col items-center justify-center px-6 py-10 border-b border-white/10">
           <img
             src={logo_with_title}
             alt="BookWorm"
-            className="h-30 mb-2 select-none transition-transform duration-300 hover:scale-105"
+            className="h-28 mb-3 select-none transition-transform duration-300 hover:scale-105"
           />
-          <span className="text-m tracking-wide text-white/50">
-            Management
+          <span className="text-xs tracking-widest uppercase text-green-400">
+            Manage your books here
           </span>
         </div>
 
-        {/* ================= MENU ================= */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
+        {/* MENU */}
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
 
-          {/* Dashboard */}
+          {/* DASHBOARD */}
           <button
             onClick={() => {
               setActive("Dashboard");
               setSelectedComponent("Dashboard");
             }}
             className={`${menuBase} ${
-              active === "Dashboard"
-                ? "bg-white text-black shadow-lg"
-                : "text-white/70 hover:bg-white/10 hover:translate-x-1"
+              active === "Dashboard" ? activeStyle : idleStyle
             }`}
           >
             {active === "Dashboard" && (
@@ -89,34 +91,32 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
             Dashboard
           </button>
 
-          {/* Books */}
+          {/* BOOKS */}
           <button
             onClick={() => {
               setActive("Books");
               setSelectedComponent("Books");
             }}
             className={`${menuBase} ${
-              active === "Books"
-                ? "bg-white text-black shadow-lg"
-                : "text-white/70 hover:bg-white/10 hover:translate-x-1"
+              active === "Books" ? activeStyle : idleStyle
             }`}
           >
             <img src={bookIcon} className="h-5 w-5" />
             Books
           </button>
 
-          {/* ADMIN ONLY */}
-          {/* {isAuthenticated && user?.role === "User" && (
-            <> */}
+          {/* ADMIN OPTIONS */}
+          {isAuthenticated && user?.role === "Admin" && (
+            <>
+              
+
               <button
                 onClick={() => {
                   setActive("Catalog");
                   setSelectedComponent("Catalog");
                 }}
                 className={`${menuBase} ${
-                  active === "Catalog"
-                    ? "bg-white text-black shadow-lg"
-                    : "text-white/70 hover:bg-white/10 hover:translate-x-1"
+                  active === "Catalog" ? activeStyle : idleStyle
                 }`}
               >
                 <img src={catalogIcon} className="h-5 w-5" />
@@ -129,9 +129,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
                   setSelectedComponent("Users");
                 }}
                 className={`${menuBase} ${
-                  active === "Users"
-                    ? "bg-white text-black shadow-lg"
-                    : "text-white/70 hover:bg-white/10 hover:translate-x-1"
+                  active === "Users" ? activeStyle : idleStyle
                 }`}
               >
                 <img src={usersIcon} className="h-5 w-5" />
@@ -140,55 +138,59 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
 
               <button
                 onClick={() => dispatch(toggleAddNewAdminPopup())}
-                className={`${menuBase} text-white/70 hover:bg-white/10 hover:translate-x-1`}
+                className={`${menuBase} ${idleStyle}`}
               >
                 <RiAdminFill className="h-5 w-5" />
                 Add New Admin
               </button>
-            {/* </>
-          )} */}
-
-          {/* USER ONLY */}
-          {isAuthenticated && user?.role === "User" && (
-            <button
-              onClick={() => {
-                setActive("Borrowed");
-                setSelectedComponent("Borrowed Books");
-              }}
-              className={`${menuBase} text-white/70 hover:bg-white/10 hover:translate-x-1`}
-            >
-              <img src={catalogIcon} className="h-5 w-5" />
-              My Borrowed Books
-            </button>
+            </>
           )}
 
-          {/* Mobile Settings */}
+          {/* USER */}
+          {isAuthenticated && user?.role === "User" && (
+            <>
+             
+
+              <button
+                onClick={() => {
+                  setActive("Borrowed");
+                  setSelectedComponent("Borrowed Books");
+                }}
+                className={`${menuBase} ${idleStyle}`}
+              >
+                <img src={catalogIcon} className="h-5 w-5" />
+                My Borrowed Books
+              </button>
+            </>
+          )}
+
+          {/* MOBILE SETTINGS */}
           <button
             onClick={() => dispatch(toggleSettingPopup())}
-            className="md:hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:translate-x-1 transition"
+            className="md:hidden mt-6 w-full flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:translate-x-1 transition"
           >
             <img src={settingIcon} className="h-5 w-5" />
             Update Credentials
           </button>
         </nav>
 
-        {/* ================= LOGOUT ================= */}
+        {/* LOGOUT */}
         <div className="px-6 py-6 border-t border-white/10">
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-4 mx-auto text-sm font-medium text-white/60 hover:text-red-400 hover:scale-105 transition-all"
+            onClick={() => dispatch(logout())}
+            className="flex items-center gap-3 mx-auto text-sm font-medium text-white/60 hover:text-red-400 hover:scale-105 transition"
           >
             <img src={logoutIcon} className="h-5 w-5" />
             Log Out
           </button>
         </div>
 
-        {/* ================= MOBILE CLOSE ================= */}
+        {/* MOBILE CLOSE */}
         <img
           src={closeIcon}
           alt="close"
           onClick={() => setIsSideBarOpen(false)}
-          className="absolute top-5 right-5 cursor-pointer md:hidden opacity-70 hover:opacity-100 transition"
+          className="absolute top-5 right-5 h-6 cursor-pointer md:hidden opacity-70 hover:opacity-100 transition"
         />
       </aside>
 
