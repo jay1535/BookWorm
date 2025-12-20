@@ -1,6 +1,7 @@
 import express from 'express';
 import {config} from "dotenv";
 import cookieParser from 'cookie-parser';
+import path from "path";
 import cors from "cors";
 import { connectDB } from './database/db.js';
 import { errorMiddleware } from './middlewares/errorMiddlewares.js';
@@ -30,7 +31,7 @@ app.use(fileUpload({
     useTempFiles:true,
     tempFileDir:"/tmp/"
 }));
-
+app.use(express.static(path.join(process.cwd(), "public")));
 
 app.use("/api/v1/auth",authRouter)
 app.use("/api/v1/book",bookRouter)
