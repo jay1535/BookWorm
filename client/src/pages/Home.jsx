@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from "react";
+import logo from "../assets/white-logo.png";
+import logo_black from "../assets/black-logo.png";
 import {
   Sun,
   Moon,
   LogIn,
   UserPlus,
-  LayoutDashboard,
-  ShieldCheck,
   Clock,
-  Users,
-  GraduationCap,
+  BookOpen,
+  Layers,
   ArrowRight,
+  Users,
+  CheckCircle,
+  ListCheckIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const THEME_KEY = "bookworm-theme";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const [theme, setTheme] = useState(
     () => localStorage.getItem(THEME_KEY) || "light"
   );
@@ -24,246 +32,269 @@ const Home = () => {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
+  /* ================= AUTH SAFE NAVIGATION ================= */
+  const goToDashboard = () => {
+    const token = localStorage.getItem("token");
+    if (isAuthenticated || token) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const goToLogin = () => navigate("/login");
+  const goToRegister = () => navigate("/register");
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
-
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/10 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
-
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img
-              src={theme === "dark" ? "/white-logo.png" : "/black-logo.png"}
-              alt="BookWorm Logo"
-              className="h-8"
-            />
-            <div className="leading-tight">
-              <div className="text-2xl font-extrabold tracking-tight">
-                Book<span className="opacity-60">Worm</span>
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Knowledge, Structured
-              </div>
+          {/* BRAND */}
+          <div
+            onClick={() => navigate("/")}
+            className="cursor-pointer flex gap-3 items-center"
+          >
+            {theme === "light" ? (
+              <img src={logo_black} alt="Logo" className="w-10 h-10" />
+            ) : (
+              <img src={logo} alt="Logo" className="w-10 h-10" />
+            )}
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight">
+                Book<span className="text-gray-500">Worm</span>
+              </h1>
+              <span className="text-xs text-gray-500">
+                Library Management
+              </span>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex gap-10 text-sm font-medium text-gray-600 dark:text-gray-400">
-            <a className="hover:text-black dark:hover:text-white transition cursor-pointer">
-              Features
-            </a>
-            <a className="hover:text-black dark:hover:text-white transition cursor-pointer">
-              Roles
-            </a>
-            <a className="hover:text-black dark:hover:text-white transition cursor-pointer">
-              Dashboard
-            </a>
+          {/* NAV LINKS */}
+          <nav className="hidden md:flex gap-10 text-lg font-semibold text-gray-600 dark:text-gray-400">
+            <a href="#features" className="hover:text-black dark:hover:text-white">Features</a>
+            <a href="#workflow" className="hover:text-black dark:hover:text-white">Workflow</a>
+            <a href="#roles" className="hover:text-black dark:hover:text-white">Roles</a>
           </nav>
 
-          {/* Actions */}
+          {/* ACTIONS */}
           <div className="flex items-center gap-3">
-            <IconButton
-              aria-label="Toggle theme"
-              onClick={() =>
-                setTheme(theme === "light" ? "dark" : "light")
-              }
+            <button
+              className="border rounded-full p-2"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             >
-              {theme === "light" ? <Moon /> : <Sun />}
-            </IconButton>
+              {theme === "light" ? (
+                <Moon className="w-5 h-5 text-blue-600" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-400" />
+              )}
+            </button>
 
-            <Button>
-              <LogIn className="w-4 h-4" />
-              Sign In
-            </Button>
-
-            <Button variant="solid">
-              <UserPlus className="w-4 h-4" />
-              Get Started
-            </Button>
+            {!isAuthenticated && (
+              <>
+                <Button onClick={goToLogin}>
+                  <LogIn className="w-4 h-4" /> Sign In
+                </Button>
+                <Button variant="solid" onClick={goToRegister}>
+                  <UserPlus className="w-4 h-4" /> Get Started
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* ================= HERO ================= */}
-      <section className="relative text-center px-6 pt-40 pb-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-gray-100/70 via-transparent to-transparent dark:from-neutral-900/70" />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-linear-to-b from-black/5 via-transparent to-transparent dark:from-white/5" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-125 w-125 rounded-full bg-black/10 dark:bg-white/10 blur-[120px]" />
 
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight max-w-4xl mx-auto">
-          A Smarter Way to
-          <br />
-          <span className="opacity-60">
-            Manage Your Library
-          </span>
-        </h1>
+        <div className="max-w-5xl mx-auto px-8 pt-10 pb-36 text-center">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
+            Organize Libraries
+            <br />
+            <span className="opacity-50">Without the Chaos</span>
+          </h2>
 
-        <p className="mt-10 text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          BookWorm is a modern library management system designed to
-          organize collections, streamline circulation, and improve
-          accessibility for administrators, librarians, and members.
-        </p>
+          <p className="mt-8 text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            BookWorm replaces spreadsheets, registers, and fragmented tools with a
+            single intelligent platform designed for speed, clarity, and control.
+          </p>
 
-        <div className="mt-16 flex justify-center gap-5">
-          <Button size="lg" variant="solid">
-            Get Started
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+          <ul className="mt-12 space-y-4 max-w-xl mx-auto text-left">
+            {[
+              "Track books, members, and availability in real-time",
+              "Secure role-based access for admins, librarians, and users",
+              "Automated issuing, returns, and due-date management",
+            ].map((text, i) => (
+              <li key={i} className="flex gap-3">
+                <CheckCircle />
+                <span>{text}</span>
+              </li>
+            ))}
+          </ul>
 
-          <Button size="lg">
-            Sign In
-          </Button>
-        </div>
-      </section>
-
-      {/* ================= STATS ================= */}
-      <section className="border-y border-gray-200 dark:border-gray-800 py-20">
-        <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 sm:grid-cols-3 gap-14 text-center">
-          <Stat value="10,000+" label="Books Catalogued" />
-          <Stat value="2,000+" label="Registered Members" />
-          <Stat value="24/7" label="System Availability" />
+          <div className="mt-16 flex justify-center gap-4">
+            <Button size="lg" variant="solid" onClick={goToDashboard}>
+              Get Started <ArrowRight className="w-4 h-4" />
+            </Button>
+            {!isAuthenticated && (
+              <Button size="lg" onClick={goToLogin}>
+                Sign In
+              </Button>
+            )}
+          </div>
         </div>
       </section>
 
       {/* ================= FEATURES ================= */}
-      <section className="py-36">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-center mb-24">
-            Core Features That Matter
-          </h2>
+      <section id="features" className="py-32 border-t border-black/10 dark:border-white/10 h-screen">
+        <div className="max-w-5xl mx-auto px-8 text-center">
+          <ListCheckIcon className="mx-auto mb-6" />
+          <h3 className="text-4xl font-bold mb-6">Key Features</h3>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-16">
-            <FeatureCard
-              icon={<LayoutDashboard />}
-              title="Unified Dashboard"
-              desc="Monitor inventory, members, and circulation activity from a single, intuitive interface."
-            />
-            <FeatureCard
-              icon={<ShieldCheck />}
-              title="Role-Based Access Control"
-              desc="Secure authentication with permissions tailored for administrators, librarians, and users."
-            />
-            <FeatureCard
-              icon={<Clock />}
-              title="Automated Circulation"
-              desc="Issue books, manage returns, and track due dates with minimal manual intervention."
-            />
+        <div className="max-w-6xl mx-auto px-8 grid md:grid-cols-3 gap-20">
+          <Feature icon={<BookOpen />} title="Smart Catalog" desc="Centralized book database with advanced search, filters, and metadata." />
+          <Feature icon={<Layers />} title="Role Based Access" desc="Admins, librarians, and members get tailored permissions and views." />
+          <Feature icon={<Clock />} title="Automation" desc="Automatic due dates, availability updates, and circulation handling." />
+        </div>
+      </section>
+
+      {/* ================= WORKFLOW ================= */}
+      <section id="workflow" className="py-32 bg-black text-white h-screen">
+        <div className="max-w-5xl mx-auto px-8 text-center">
+          <Layers className="mx-auto mb-6" />
+          <h3 className="text-4xl font-bold mb-6">Simple Workflow</h3>
+          <p className="text-gray-400 mb-12">
+            Designed to be intuitive for both staff and users.
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-10 text-left">
+            <Step title="1. Add & Organize" desc="Register books, categorize them, and manage availability." />
+            <Step title="2. Issue & Track" desc="Issue books, monitor borrowers, and track due dates automatically." />
+            <Step title="3. Monitor & Control" desc="Admins oversee usage, users, and system health in real time." />
           </div>
         </div>
       </section>
 
       {/* ================= ROLES ================= */}
-      <section className="bg-gray-50 dark:bg-neutral-950 py-36 border-y border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-center mb-24">
-            Built for Every Library Role
-          </h2>
+      <section id="roles" className="py-32 h-screen">
+        <div className="max-w-6xl mx-auto px-8 text-center">
+          <Users className="mx-auto mb-6" />
+          <h3 className="text-4xl font-bold mb-10">Built for Everyone</h3>
 
-          <div className="grid md:grid-cols-3 gap-16">
-            <RoleCard
-              icon={<ShieldCheck />}
-              title="Administrator"
-              desc="Manage users, configure system settings, and review library analytics."
-            />
-            <RoleCard
-              icon={<Users />}
-              title="Librarian"
-              desc="Handle daily operations including book issuance, returns, and catalog updates."
-            />
-            <RoleCard
-              icon={<GraduationCap />}
-              title="Member / Student"
-              desc="Search the catalog, track borrowed books, and receive due date reminders."
-            />
+          <div className="grid md:grid-cols-3 gap-12">
+            <Role title="Admin" desc="Full control over users, books, reports, and analytics." />
+            <Role title="Librarian" desc="Manage catalog, issue/return books, and assist members." />
+            <Role title="Member" desc="Search, borrow, and track books with ease." />
           </div>
         </div>
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="py-36 bg-black text-white text-center relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white/10 via-transparent to-white/10" />
-
-        <h2 className="text-4xl font-extrabold mb-8">
-          Simplify Library Management
-        </h2>
-
-        <p className="text-gray-300 text-lg max-w-xl mx-auto mb-14">
-          Designed for institutions that prioritize organization,
-          reliability, and efficient information management.
+      <section className="py-28 text-center border-t border-black/10 dark:border-white/10">
+        <h3 className="text-4xl font-extrabold mb-6">
+          Ready to Simplify Your Library?
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-10">
+          BookWorm is built for institutions that value clarity, efficiency,
+          and modern workflows.
         </p>
 
-        <Button size="lg" variant="invert">
+        <Button size="lg" variant="solid" onClick={goToDashboard}>
           Access BookWorm
         </Button>
       </section>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-        © {new Date().getFullYear()} BookWorm · Library Management System
+      <footer className="bg-black text-white border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-8 py-20 grid md:grid-cols-4 gap-12 text-sm">
+          <div>
+            <h4 className="text-xl font-bold mb-4">BookWorm</h4>
+            <p className="text-gray-400">
+              A modern library management system designed to simplify
+              book tracking, user management, and circulation workflows.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li><a href="#features" className="hover:text-white">Features</a></li>
+              <li><a href="#workflow" className="hover:text-white">Workflow</a></li>
+              <li><a href="#roles" className="hover:text-white">Roles</a></li>
+              <li className="hover:text-white cursor-pointer" onClick={goToDashboard}>Dashboard</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">Technology</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>MERN Stack</li>
+              <li>JWT Authentication</li>
+              <li>Role-Based Access</li>
+              <li>REST APIs</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">About</h4>
+            <p className="text-gray-400">
+              Final Year Engineering Project
+              <br />
+              Built with scalability and security in mind.
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 py-6 text-center text-xs text-gray-500">
+          © {new Date().getFullYear()} BookWorm · Library Management System
+        </div>
       </footer>
+
+      <style>{`html { scroll-behavior: smooth; }`}</style>
     </div>
   );
 };
 
 /* ================= UI COMPONENTS ================= */
 
-const IconButton = ({ children, ...props }) => (
-  <button
-    {...props}
-    className="w-9 h-9 rounded-xl border border-gray-300 dark:border-gray-700 
-               flex items-center justify-center
-               hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-  >
-    {children}
-  </button>
-);
-
-const Button = ({ children, variant = "outline", size = "md" }) => {
-  const sizes = {
-    md: "px-4 py-2 text-sm",
-    lg: "px-8 py-3 text-base",
-  };
-
+const Button = ({ children, variant = "outline", size = "md", ...props }) => {
+  const sizes = { md: "px-4 py-2 text-sm", lg: "px-6 py-3 text-base" };
   const variants = {
-    outline:
-      "border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900",
-    solid:
-      "bg-black text-white dark:bg-white dark:text-black shadow-sm hover:shadow-md hover:-translate-y-[1px]",
-    invert:
-      "bg-white text-black shadow-sm hover:shadow-md hover:-translate-y-[1px]",
+    outline: "border border-black/20 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5",
+    solid: "bg-black text-white dark:bg-white dark:text-black hover:opacity-90",
   };
 
   return (
     <button
-      className={`inline-flex items-center gap-1.5 rounded-xl font-semibold transition-all 
-                  ${sizes[size]} ${variants[variant]}`}
+      {...props}
+      className={`inline-flex items-center gap-2 rounded-xl font-semibold transition ${sizes[size]} ${variants[variant]}`}
     >
       {children}
     </button>
   );
 };
 
-const FeatureCard = ({ icon, title, desc }) => (
-  <div className="rounded-2xl border border-gray-200 dark:border-gray-800 p-14 bg-white dark:bg-black
-                  hover:shadow-xl hover:-translate-y-2 transition">
+const Feature = ({ icon, title, desc }) => (
+  <div className="p-10 rounded-3xl border border-black/10 dark:border-white/10 hover:shadow-xl transition">
     <div className="mb-6">{icon}</div>
-    <h3 className="text-xl font-semibold mb-4">{title}</h3>
+    <h4 className="text-xl font-semibold mb-3">{title}</h4>
     <p className="text-gray-600 dark:text-gray-400">{desc}</p>
   </div>
 );
 
-const RoleCard = ({ icon, title, desc }) => (
-  <div className="rounded-2xl border border-gray-200 dark:border-gray-800 p-14 bg-white/70 dark:bg-black/70 backdrop-blur
-                  hover:shadow-xl hover:-translate-y-2 transition">
-    <div className="mb-6">{icon}</div>
-    <h3 className="text-xl font-semibold mb-4">{title}</h3>
+const Role = ({ title, desc }) => (
+  <div className="p-10 rounded-3xl border border-black/10 dark:border-white/10">
+    <h4 className="text-xl font-semibold mb-3">{title}</h4>
     <p className="text-gray-600 dark:text-gray-400">{desc}</p>
   </div>
 );
 
-const Stat = ({ value, label }) => (
-  <div>
-    <div className="text-4xl font-extrabold">{value}</div>
-    <div className="mt-2 text-gray-600 dark:text-gray-400">{label}</div>
+const Step = ({ title, desc }) => (
+  <div className="p-8 rounded-2xl bg-white/10">
+    <h4 className="font-semibold mb-2">{title}</h4>
+    <p className="text-gray-300">{desc}</p>
   </div>
 );
 

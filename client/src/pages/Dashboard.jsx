@@ -12,63 +12,69 @@ import MyBorrowedBooks from "../components/MyBorrowedBooks";
 
 const Dashboard = () => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
-  const [selectedComponent, setSelectedComponent] = useState(false);
+  const [selectedComponent, setSelectedComponent] = useState("Dashboard");
 
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  // if(!isAuthenticated){
-  //   return <Navigate to = "/login"/>
-  // }
+  const { user, isAuthenticated, loading } = useSelector(
+    (state) => state.auth
+  );
+
+  /* 🔥 WAIT FOR AUTH CHECK */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="text-gray-500 text-lg">Loading...</span>
+      </div>
+    );
+  }
+
+  /* 🔐 PROTECT ROUTE */
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    <>
-      <div className="relative  flex min-h-screen bg-gray-100">
-        <div className="md:hidden z-10 absolute right-6 top-4 sm:top-6 flex justify-center items-center bg-black rounded-md h-9 w-9 text-white">
-          <MenuIcon
-            className="text-2xl"
-            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
-          />
-        </div>
-        <SideBar
-          isSideBarOpen={isSideBarOpen}
-          setIsSideBarOpen={setIsSideBarOpen}
-          setSelectedComponent={setSelectedComponent}
-        />
+    <div className="relative flex min-h-screen bg-gray-100">
 
-        {/* IIFE: Immediatly invoked function expression*/}
+      {/* MOBILE MENU */}
+      <div className="md:hidden z-10 absolute right-6 top-4 flex items-center justify-center bg-black rounded-md h-9 w-9 text-white">
+        <MenuIcon onClick={() => setIsSideBarOpen(!isSideBarOpen)} />
+      </div>
 
+      <SideBar
+        isSideBarOpen={isSideBarOpen}
+        setIsSideBarOpen={setIsSideBarOpen}
+        setSelectedComponent={setSelectedComponent}
+      />
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1">
         {(() => {
           switch (selectedComponent) {
             case "Dashboard":
-              return user?.role === "User" ? (
-                <UserDashboard />
-              ) : (
-                <AdminDashboard />
-              );
+              return user.role === "Admin"
+                ? <AdminDashboard />
+                : <UserDashboard />;
+
             case "Books":
               return <BookManagement />;
+
             case "Catalog":
-              if (user?.role === "Admin") {
-                return <Catalog />;
-              }
-              break;
+              return user.role === "Admin" ? <Catalog /> : null;
+
             case "Users":
-              if (user?.role === "Admin") {
-                return <Users />;
-              }
-              break;
+              return user.role === "Admin" ? <Users /> : null;
+
             case "Borrowed Books":
               return <MyBorrowedBooks />;
 
             default:
-              return user?.role === "User" ? (
-                <UserDashboard />
-              ) : (
-                <AdminDashboard />
-              );
+              return user.role === "Admin"
+                ? <AdminDashboard />
+                : <UserDashboard />;
           }
         })()}
       </div>
-    </>
+    </div>
   );
 };
 
