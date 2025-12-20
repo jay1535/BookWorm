@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
@@ -8,9 +8,16 @@ import OTP from "./pages/OTP";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { getUser } from "./store/slices/authSlice";
 
 
 function App() {
+   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUser()); // 🔥 THIS FIXES HEADER ISSUE
+  }, [dispatch]);
   return (
     <Router>
     <Routes>
@@ -23,7 +30,7 @@ function App() {
       <Route path="/password/reset/:token" element={<ResetPassword />} />
     </Routes>
     <ToastContainer theme="dark"/>
-      </Router>
+    </Router>
   );
 }
 
