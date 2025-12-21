@@ -67,7 +67,7 @@ export const fetchAllUsers = () => async (dispatch) => {
   }
 };
 
-/* 🔹 ADD NEW ADMIN */
+/* 🔹 ADD NEW ADMIN (FIXED) */
 export const addNewAdmin = (adminData) => async (dispatch) => {
   try {
     dispatch(addNewAdminRequest());
@@ -76,14 +76,12 @@ export const addNewAdmin = (adminData) => async (dispatch) => {
       "/api/v1/user/add/new-admin",
       adminData,
       {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
+        withCredentials: true, // ✅ ONLY THIS
       }
     );
 
     dispatch(addNewAdminSuccess());
     toast.success(data.message || "Admin added successfully");
-
 
     dispatch(fetchAllUsers());
   } catch (error) {
