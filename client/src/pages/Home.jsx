@@ -13,29 +13,34 @@ import {
   Users,
   CheckCircle,
   ListCheckIcon,
+  LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, resetAuthSlice } from "../store/slices/authSlice";
 
 const THEME_KEY = "bookworm-theme";
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [theme, setTheme] = useState(
     () => localStorage.getItem(THEME_KEY) || "light"
   );
 
+  /* ================= THEME HANDLING ================= */
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
-  /* ================= AUTH SAFE NAVIGATION ================= */
+  /* ================= NAVIGATION ================= */
   const goToDashboard = () => {
-    const token = localStorage.getItem("token");
-    if (isAuthenticated || token) {
+    if (isAuthenticated) {
       navigate("/dashboard");
     } else {
       navigate("/login");
@@ -45,27 +50,37 @@ const Home = () => {
   const goToLogin = () => navigate("/login");
   const goToRegister = () => navigate("/register");
 
+  /* ================= LOGOUT ================= */
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(resetAuthSlice());
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+
       {/* ================= HEADER ================= */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/10 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
+
           {/* BRAND */}
           <div
             onClick={() => navigate("/")}
             className="cursor-pointer flex gap-3 items-center"
           >
-            {theme === "light" ? (
-              <img src={logo_black} alt="Logo" className="w-10 h-10" />
-            ) : (
-              <img src={logo} alt="Logo" className="w-10 h-10" />
-            )}
-            <div>
+            <img
+              src={theme === "light" ? logo_black : logo}
+              alt="Logo"
+              className="w-13 h-13"
+            />
+            <div className="flex flex-col items-center">
               <h1 className="text-2xl font-extrabold tracking-tight">
                 Book<span className="text-gray-500">Worm</span>
               </h1>
-              <span className="text-xs text-gray-500">
-                Library Management
+              <span className="text-lg text-gray-500">
+                Library 
               </span>
             </div>
           </div>
@@ -79,6 +94,8 @@ const Home = () => {
 
           {/* ACTIONS */}
           <div className="flex items-center gap-3">
+
+            {/* THEME TOGGLE */}
             <button
               className="border rounded-full p-2"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -90,13 +107,23 @@ const Home = () => {
               )}
             </button>
 
-            {!isAuthenticated && (
+            {/* AUTH BUTTONS */}
+            {!isAuthenticated ? (
               <>
                 <Button onClick={goToLogin}>
                   <LogIn className="w-4 h-4" /> Sign In
                 </Button>
                 <Button variant="solid" onClick={goToRegister}>
                   <UserPlus className="w-4 h-4" /> Get Started
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => navigate("/dashboard")}>
+                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+                </Button>
+                <Button variant="solid" onClick={handleLogout}>
+                  <LogOut className="w-4 h-4" /> Logout
                 </Button>
               </>
             )}
@@ -136,8 +163,10 @@ const Home = () => {
 
           <div className="mt-16 flex justify-center gap-4">
             <Button size="lg" variant="solid" onClick={goToDashboard}>
-              Get Started <ArrowRight className="w-4 h-4" />
+              {isAuthenticated ? "Go to Dashboard" : "Get Started"}
+              <ArrowRight className="w-4 h-4" />
             </Button>
+
             {!isAuthenticated && (
               <Button size="lg" onClick={goToLogin}>
                 Sign In
@@ -203,10 +232,11 @@ const Home = () => {
         </p>
 
         <Button size="lg" variant="solid" onClick={goToDashboard}>
-          Access BookWorm
+          {isAuthenticated ? "Start Your Journey" : "Access BookWorm"}
         </Button>
       </section>
 
+      {/* ================= FOOTER ================= */}
       <footer className="bg-black text-white border-t border-white/10">
         <div className="max-w-7xl mx-auto px-8 py-20 grid md:grid-cols-4 gap-12 text-sm">
           <div>
@@ -223,7 +253,9 @@ const Home = () => {
               <li><a href="#features" className="hover:text-white">Features</a></li>
               <li><a href="#workflow" className="hover:text-white">Workflow</a></li>
               <li><a href="#roles" className="hover:text-white">Roles</a></li>
-              <li className="hover:text-white cursor-pointer" onClick={goToDashboard}>Dashboard</li>
+              <li className="hover:text-white cursor-pointer" onClick={goToDashboard}>
+                Dashboard
+              </li>
             </ul>
           </div>
 

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import logo from "../assets/black-logo.png";
 import logo_with_title from "../assets/logo-with-title.png";
 import { otpVerification, resetAuthSlice } from "../store/slices/authSlice";
+import { ArrowLeft } from "lucide-react";
 
 const OTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", ""]); // ✅ 5 digits
@@ -76,8 +77,23 @@ const OTP = () => {
   }, [message, error, isAuthenticated, dispatch, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white text-black">
+    <div className="relative min-h-screen flex flex-col md:flex-row items-center justify-center md:items-stretch md:justify-start bg-white text-black">
 
+<button
+  onClick={() => navigate(-1)}
+  className="
+    absolute top-6 left-0 z-50
+    flex items-center gap-2
+    bg-black text-white
+    px-5 py-3
+    rounded-r-full
+    hover:bg-black/90
+    transition
+  "
+>
+  <ArrowLeft size={18} />
+  Back
+</button>
       {/* LEFT PANEL */}
       <div className="hidden md:flex w-1/2 bg-black text-white items-center justify-center rounded-tr-[90px] rounded-br-[90px]">
         <div className="text-center max-w-sm px-10">

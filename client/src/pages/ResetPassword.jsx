@@ -48,7 +48,8 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white text-black">
+    <div className="relative min-h-screen flex flex-col md:flex-row items-center justify-center md:items-stretch md:justify-start bg-white text-black">
+
 
       {/* LEFT PANEL */}
       <div className="hidden md:flex w-1/2 bg-black text-white items-center justify-center rounded-tr-[90px] rounded-br-[90px]">
