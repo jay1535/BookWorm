@@ -8,15 +8,20 @@ import OTP from "./pages/OTP";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { ToastContainer } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./store/slices/authSlice";
+import { fetchAllUsers } from "./store/slices/userSlice";
 
 
 function App() {
    const dispatch = useDispatch();
+   const {user, isAuthenticated} = useSelector((state)=> state.auth);
 
   useEffect(() => {
-    dispatch(getUser()); // 🔥 THIS FIXES HEADER ISSUE
+    dispatch(getUser());
+     if(isAuthenticated && user?.role === "Admin"){
+      dispatch(fetchAllUsers());
+     }
   }, [dispatch]);
   return (
     <Router>
