@@ -7,6 +7,8 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { sendToken } from "../utils/sendToken.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplates.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import cloudinary from "../config/cloudinary.js";
+
 
 /* =====================================================
    REGISTER USER
@@ -244,3 +246,41 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
     message: "Password updated successfully",
   });
 });
+
+export const updateAvatar = catchAsyncErrors(async (req, res, next) => {
+  if (!req.files || !req.files.avatar) {
+    return next(new ErrorHandler("Please upload a file", 400));
+  }
+
+  const user = await User.findById(req.user._id);
+  const { avatar } = req.files;
+
+  /* 🔥 Delete old avatar */
+  if (user.avatar?.public_id) {
+    await cloudinary.uploader.destroy(user.avatar.public_id);
+  }
+
+  /* 🔥 Upload ANY format */
+  const cloudinaryResponse = await cloudinary.uploader.upload(
+    avatar.tempFilePath,
+    {
+      folder: "Bookworm_avatars",
+      resource_type: "auto", // ✅ accepts ANY file
+    }
+  );
+
+  user.avatar = {
+    public_id: cloudinaryResponse.public_id,
+    url: cloudinaryResponse.secure_url,
+  };
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Avatar updated successfully",
+    user,
+  });
+});
+
+
