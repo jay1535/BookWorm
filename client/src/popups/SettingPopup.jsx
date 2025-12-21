@@ -93,6 +93,7 @@ const SettingPopup = () => {
 
     setActionType("avatar");
     dispatch(updateAvatar(formData));
+     dispatch(toggleSettingPopup());
   };
 
   /* ================= PASSWORD ================= */
@@ -116,7 +117,9 @@ const SettingPopup = () => {
         newPassword,
         confirmNewPassword,
       })
+     
     );
+     dispatch(toggleSettingPopup());
   };
 
   return (
