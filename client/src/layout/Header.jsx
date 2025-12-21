@@ -39,28 +39,37 @@ const Header = () => {
 
   return (
     <header className="w-full h-16 px-4 bg-white text-black flex items-center justify-between sticky top-0 z-30 shadow-sm">
-
       {/* ================= LEFT ================= */}
       <div className="flex items-center gap-4">
-        <FaUser className="w-10 h-10 p-1 border rounded-full" />
+        {/* AVATAR */}
+        {user?.avatar?.url ? (
+          <img
+            src={user.avatar.url}
+            alt={user.name}
+            className="w-10 h-10 rounded-full object-cover border"
+          />
+        ) : (
+          <FaUser className="w-10 h-10 p-2 border rounded-full text-gray-500" />
+        )}
 
         <div className="flex flex-col">
           <span className="text-sm font-medium sm:text-lg lg:text-xl sm:font-semibold">
             {user?.name || "Guest"}
           </span>
 
-          <span className="text-sm text-gray-400 sm:text-sm sm:font-medium">
+          <span className="text-xs sm:text-sm text-gray-400 font-medium">
             {user?.role || "User"}
           </span>
         </div>
       </div>
-         {/* ☰ SIDEBAR TOGGLE */}
-        <button
-          onClick={() => dispatch(toggleSidebar())}
-          className="p-2 rounded-md hover:bg-gray-100 transition md:hidden"
-        >
-          <FaBars className="w-5 h-5" />
-        </button>
+
+      {/* ☰ SIDEBAR TOGGLE (MOBILE) */}
+      <button
+        onClick={() => dispatch(toggleSidebar())}
+        className="p-2 rounded-md hover:bg-gray-100 transition md:hidden"
+      >
+        <FaBars className="w-5 h-5" />
+      </button>
 
       {/* ================= RIGHT ================= */}
       <div className="hidden md:flex items-center justify-center gap-6">
@@ -72,10 +81,10 @@ const Header = () => {
             {currentDate}
           </span>
         </div>
-        
 
+        {/* SETTINGS */}
         <div
-          className="border rounded-full cursor-pointer"
+          className="border rounded-full cursor-pointer hover:bg-gray-100 transition"
           onClick={() => dispatch(toggleSettingPopup())}
         >
           <img
