@@ -7,36 +7,23 @@ const Users = () => {
   const dispatch = useDispatch();
   const { users, loading } = useSelector((state) => state.user);
 
-  /* ================= SEARCH STATE ================= */
   const [search, setSearch] = useState("");
 
-  /* ================= FETCH USERS ================= */
   useEffect(() => {
     dispatch(fetchAllUsers());
   }, [dispatch]);
 
-  /* ================= DATE FORMAT ================= */
   const formatDate = (timeStamp) => {
     if (!timeStamp) return "—";
-
     const date = new Date(timeStamp);
-
-    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${date.getFullYear()}`;
-
-    const hours = date.getHours();
-    const formattedTime = `${String(hours % 12 || 12).padStart(2, "0")}:${String(
-      date.getMinutes()
-    ).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
-
-    return `${formattedDate} ${formattedTime}`;
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
   };
 
-  /* ================= FILTER + SEARCH ================= */
   const filteredUsers = useMemo(() => {
     if (!Array.isArray(users)) return [];
-
     const keyword = search.toLowerCase();
 
     return users.filter(
@@ -48,12 +35,11 @@ const Users = () => {
     );
   }, [users, search]);
 
-  /* ================= LOADING ================= */
   if (loading) {
     return (
       <>
         <Header />
-        <main className="flex-1 p-6 pt-28 min-h-screen bg-gray-50 flex items-center justify-center">
+        <main className="flex-1 p-6 pt-28 bg-gray-50 flex items-center justify-center">
           <p className="text-gray-500 text-lg">Loading users...</p>
         </main>
       </>
@@ -64,9 +50,9 @@ const Users = () => {
     <>
       <Header />
 
-      <main className="relative flex-1 p-6 pt-28 bg-gray-50 min-h-screen">
-        {/* ================= HEADER ================= */}
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <main className="flex-1 p-4 pt-28 bg-gray-50 text-black">
+        {/* HEADER */}
+        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-gray-800">
               Registered Users
@@ -76,107 +62,124 @@ const Users = () => {
             </p>
           </div>
 
-          <span className="inline-flex items-center rounded-full bg-black px-4 py-1.5 text-sm font-medium text-white">
+          <span className="inline-flex w-fit items-center rounded-full bg-black px-4 py-1.5 text-sm font-medium text-white">
             Total Users: {filteredUsers.length}
           </span>
         </header>
 
-        {/* ================= SEARCH ================= */}
-        <div className="mt-4 max-w-sm">
+        {/* SEARCH */}
+        <div className="mt-4 w-full md:max-w-sm">
           <input
             type="text"
             placeholder="Search by ID, name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-black"
           />
         </div>
 
-        {/* ================= TABLE ================= */}
-        {filteredUsers.length > 0 ? (
-          <div className="mt-6 overflow-x-auto rounded-xl bg-white shadow-md">
-            <table className="w-full border-collapse text-left">
+        {/* ================= MOBILE VIEW ================= */}
+        <div className="mt-6 space-y-4 md:hidden">
+          {filteredUsers.map((user) => {
+            const booksBorrowed =
+              user.borrowedBooks?.length ||
+              user.booksBorrowed?.length ||
+              user.issuedBooks?.length ||
+              0;
+
+            return (
+              <div
+                key={user._id}
+                className="rounded-xl bg-white p-4 shadow-md border"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold text-gray-800">{user.name}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+
+                  <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold">
+                    {user.role}
+                  </span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-500">User ID</p>
+                    <p className="font-mono text-xs">
+                      {user._id.slice(0, 8)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-gray-500">Books Borrowed</p>
+                    <p className="font-semibold">{booksBorrowed}</p>
+                  </div>
+
+                  <div className="col-span-2">
+                    <p className="text-gray-500">Registered</p>
+                    <p className="text-sm">
+                      {formatDate(user.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ================= DESKTOP TABLE ================= */}
+        {filteredUsers.length > 0 && (
+          <div className="hidden md:block mt-6 overflow-x-auto rounded-xl bg-white shadow-md">
+            <table className="w-full text-left">
               <thead className="bg-black text-white">
                 <tr>
-                  <th className="px-6 py-4 text-sm font-medium">#</th>
-                  <th className="px-6 py-4 text-sm font-medium">ID</th>
-                  <th className="px-6 py-4 text-sm font-medium">Name</th>
-                  <th className="px-6 py-4 text-sm font-medium">Email</th>
-                  <th className="px-6 py-4 text-sm font-medium">Role</th>
-                  <th className="px-6 py-4 text-sm font-medium">
-                    Books Borrowed
-                  </th>
-                  <th className="px-6 py-4 text-sm font-medium">
-                    Registered On
-                  </th>
+                  <th className="px-6 py-4 text-sm">#</th>
+                  <th className="px-6 py-4 text-sm">ID</th>
+                  <th className="px-6 py-4 text-sm">Name</th>
+                  <th className="px-6 py-4 text-sm">Email</th>
+                  <th className="px-6 py-4 text-sm">Role</th>
+                  <th className="px-6 py-4 text-sm">Books</th>
+                  <th className="px-6 py-4 text-sm">Registered</th>
                 </tr>
               </thead>
-
               <tbody>
-                {filteredUsers.map((user, index) => {
-                  const booksBorrowed =
-                    user.borrowedBooks?.length ||
-                    user.booksBorrowed?.length ||
-                    user.issuedBooks?.length ||
-                    0;
-
-                  return (
-                    <tr
-                      key={user._id}
-                      className="border-b last:border-none hover:bg-gray-50 transition"
-                    >
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {index + 1}
-                      </td>
-
-                      {/* ID NAME */}
-                      <td className="px-6 py-4 text-sm font-mono text-gray-700">
-                        {user._id?.slice(0, 8)}
-                      </td>
-
-                      {/* NAME */}
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-gray-800">
-                            {user.name}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* EMAIL */}
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {user.email}
-                      </td>
-
-                      {/* ROLE */}
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-800">
-                          {user.role}
-                        </span>
-                      </td>
-
-                      {/* BOOKS BORROWED */}
-                      <td className="px-6 py-4 text-sm text-center font-semibold text-gray-800">
-                        {booksBorrowed}
-                      </td>
-
-                      {/* REGISTERED */}
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {formatDate(user.createdAt)}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filteredUsers.map((user, index) => (
+                  <tr
+                    key={user._id}
+                    className="border-b last:border-none hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4 font-mono text-sm">
+                      {user._id.slice(0, 8)}
+                    </td>
+                    <td className="px-6 py-4 font-medium">{user.name}</td>
+                    <td className="px-6 py-4">{user.email}</td>
+                    <td className="px-6 py-4">
+                      <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold">
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center font-semibold">
+                      {user.borrowedBooks?.length || 0}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {formatDate(user.createdAt)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-        ) : (
-          /* ================= EMPTY ================= */
-          <div className="mt-10 flex flex-col items-center justify-center rounded-xl bg-white p-10 shadow-md">
+        )}
+
+        {/* EMPTY */}
+        {filteredUsers.length === 0 && (
+          <div className="mt-10 rounded-xl bg-white p-10 text-center shadow-md">
             <h3 className="text-lg font-semibold text-gray-800">
               No Users Found
             </h3>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               Try adjusting your search.
             </p>
           </div>
