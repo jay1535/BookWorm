@@ -151,6 +151,18 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    updateAvatarRequest(state) {
+  state.loading = true;
+},
+updateAvatarSuccess(state, action) {
+  state.loading = false;
+  state.user = action.payload.user; // 🔥 update avatar in Redux
+},
+updateAvatarFailed(state, action) {
+  state.loading = false;
+  state.error = action.payload;
+},
+
 
     /* ========= ✅ ADDED (SAFE HELPERS) ========= */
     clearAuthError: (state) => {
@@ -172,6 +184,10 @@ export const {
   OtpVerificationRequest,
   OtpVerificationSuccess,
   OtpVerificationFailure,
+
+    updateAvatarRequest,
+  updateAvatarSuccess,
+  updateAvatarFailed,
 
   LoginRequest,
   LoginSuccess,
@@ -294,5 +310,25 @@ export const updatePassword = (data) => async (dispatch) => {
     dispatch(updatePasswordFailure(error.response?.data?.message));
   }
 };
+export const updateAvatar = (formData) => async (dispatch) => {
+  try {
+    dispatch(updateAvatarRequest());
+
+    const { data } = await axios.put(
+      "/api/v1/auth/avatar/update",
+      formData,
+      { withCredentials: true }
+    );
+
+    dispatch(updateAvatarSuccess(data));
+  } catch (error) {
+    dispatch(
+      updateAvatarFailed(
+        error?.response?.data?.message || "Avatar update failed"
+      )
+    );
+  }
+};
+
 
 export default authSlice.reducer;
