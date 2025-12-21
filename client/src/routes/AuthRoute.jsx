@@ -1,9 +1,10 @@
-// src/routes/AuthRoute.jsx
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 const AuthRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const { isAuthenticated, loading } = useSelector(
+    (state) => state.auth
+  );
 
   if (loading) {
     return (
@@ -13,7 +14,6 @@ const AuthRoute = ({ children }) => {
     );
   }
 
-  // 🚫 Block login/register only
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
