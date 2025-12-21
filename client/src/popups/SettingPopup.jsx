@@ -168,7 +168,7 @@ const SettingPopup = () => {
           {/* ================= AVATAR ================= */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Update Avatar (Any File)
+              Update Avatar
             </h3>
 
             <div className="flex items-center gap-4">
