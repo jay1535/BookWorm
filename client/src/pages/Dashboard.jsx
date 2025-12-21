@@ -84,7 +84,7 @@ const Dashboard = () => {
 
       {/* 🧩 MAIN CONTENT */}
       <main className="flex-1 overflow-y-auto">
-        <Header/>
+        
         {renderContent()}
       </main>
     </div>
