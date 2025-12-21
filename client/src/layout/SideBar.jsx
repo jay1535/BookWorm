@@ -14,18 +14,24 @@ import { toast } from "react-toastify";
 import {
   toggleAddNewAdminPopup,
   toggleSettingPopup,
+  toggleSidebar,
 } from "../store/slices/popUpSlice";
 import AddNewAdmin from "../popups/AddNewAdmin";
 
-const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
+const SideBar = ({ setSelectedComponent }) => {
   const dispatch = useDispatch();
-  const { addNewAdminPopup } = useSelector((state) => state.popup);
+
+  const { addNewAdminPopup, sidebarOpen } = useSelector(
+    (state) => state.popup
+  );
+
   const { error, message, isAuthenticated, user } = useSelector(
     (state) => state.auth
   );
 
   const [active, setActive] = useState("Dashboard");
 
+  /* ================= TOAST HANDLING ================= */
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -52,14 +58,14 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
         className={`
           fixed md:relative z-40 h-screen w-72
           bg-linear-to-b from-[#0A0A0A] via-[#121212] to-[#0A0A0A]
-          text-white flex flex-col
+          text-white flex flex-col 
           border-r border-white/10 backdrop-blur-xl
           transition-transform duration-500
-          ${isSideBarOpen ? "translate-x-0" : "-translate-x-full"}
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
         `}
       >
-        {/* LOGO */}
+        {/* ================= LOGO ================= */}
         <div className="flex flex-col items-center justify-center px-6 py-10 border-b border-white/10">
           <img
             src={logo_with_title}
@@ -71,7 +77,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
           </span>
         </div>
 
-        {/* MENU */}
+        {/* ================= MENU ================= */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
 
           {/* DASHBOARD */}
@@ -79,6 +85,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
             onClick={() => {
               setActive("Dashboard");
               setSelectedComponent("Dashboard");
+              dispatch(toggleSidebar());
             }}
             className={`${menuBase} ${
               active === "Dashboard" ? activeStyle : idleStyle
@@ -96,29 +103,35 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
             onClick={() => {
               setActive("Books");
               setSelectedComponent("Books");
+              dispatch(toggleSidebar());
             }}
             className={`${menuBase} ${
               active === "Books" ? activeStyle : idleStyle
             }`}
           >
+            {active === "Books" && (
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+            )}
             <img src={bookIcon} className="h-5 w-5" />
             Books
           </button>
 
-          {/* ADMIN OPTIONS */}
+          {/* ================= ADMIN ================= */}
           {isAuthenticated && user?.role === "Admin" && (
             <>
-              
-
               <button
                 onClick={() => {
                   setActive("Catalog");
                   setSelectedComponent("Catalog");
+                  dispatch(toggleSidebar());
                 }}
                 className={`${menuBase} ${
                   active === "Catalog" ? activeStyle : idleStyle
                 }`}
               >
+                {active === "Catalog" && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+                )}
                 <img src={catalogIcon} className="h-5 w-5" />
                 Catalog
               </button>
@@ -127,11 +140,15 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
                 onClick={() => {
                   setActive("Users");
                   setSelectedComponent("Users");
+                  dispatch(toggleSidebar());
                 }}
                 className={`${menuBase} ${
                   active === "Users" ? activeStyle : idleStyle
                 }`}
               >
+                {active === "Users" && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+                )}
                 <img src={usersIcon} className="h-5 w-5" />
                 Users
               </button>
@@ -146,22 +163,19 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
             </>
           )}
 
-          {/* USER */}
+          {/* ================= USER ================= */}
           {isAuthenticated && user?.role === "User" && (
-            <>
-             
-
-              <button
-                onClick={() => {
-                  setActive("Borrowed");
-                  setSelectedComponent("Borrowed Books");
-                }}
-                className={`${menuBase} ${idleStyle}`}
-              >
-                <img src={catalogIcon} className="h-5 w-5" />
-                My Borrowed Books
-              </button>
-            </>
+            <button
+              onClick={() => {
+                setActive("Borrowed");
+                setSelectedComponent("Borrowed Books");
+                dispatch(toggleSidebar());
+              }}
+              className={`${menuBase} ${idleStyle}`}
+            >
+              <img src={catalogIcon} className="h-5 w-5" />
+              My Borrowed Books
+            </button>
           )}
 
           {/* MOBILE SETTINGS */}
@@ -174,7 +188,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
           </button>
         </nav>
 
-        {/* LOGOUT */}
+        {/* ================= LOGOUT ================= */}
         <div className="px-6 py-6 border-t border-white/10">
           <button
             onClick={() => dispatch(logout())}
@@ -185,11 +199,11 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen, setSelectedComponent }) => {
           </button>
         </div>
 
-        {/* MOBILE CLOSE */}
+        {/* ================= MOBILE CLOSE ================= */}
         <img
           src={closeIcon}
           alt="close"
-          onClick={() => setIsSideBarOpen(false)}
+          onClick={() => dispatch(toggleSidebar())}
           className="absolute top-5 right-5 h-6 cursor-pointer md:hidden opacity-70 hover:opacity-100 transition"
         />
       </aside>
