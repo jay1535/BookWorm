@@ -17,11 +17,12 @@ import {
   toggleSidebar,
 } from "../store/slices/popUpSlice";
 import AddNewAdmin from "../popups/AddNewAdmin";
+import SettingPopup from "../popups/SettingPopup";
 
 const SideBar = ({ setSelectedComponent }) => {
   const dispatch = useDispatch();
 
-  const { addNewAdminPopup, sidebarOpen } = useSelector(
+  const { addNewAdminPopup, sidebarOpen, settingPopup } = useSelector(
     (state) => state.popup
   );
 
@@ -46,14 +47,14 @@ const SideBar = ({ setSelectedComponent }) => {
   const menuBase =
     "group relative w-full flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300";
 
-  const activeStyle =
-    "bg-white text-black shadow-xl scale-[1.02]";
+  const activeStyle = "bg-white text-black shadow-xl scale-[1.02]";
 
   const idleStyle =
     "text-white/70 hover:bg-white/10 hover:translate-x-1";
 
   return (
     <>
+      {/* ================= SIDEBAR ================= */}
       <aside
         className={`
           fixed md:relative z-40 h-screen w-72
@@ -79,7 +80,6 @@ const SideBar = ({ setSelectedComponent }) => {
 
         {/* ================= MENU ================= */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
-
           {/* DASHBOARD */}
           <button
             onClick={() => {
@@ -116,7 +116,7 @@ const SideBar = ({ setSelectedComponent }) => {
             Books
           </button>
 
-          {/* ================= ADMIN ================= */}
+          {/* ================= ADMIN ONLY ================= */}
           {isAuthenticated && user?.role === "Admin" && (
             <>
               <button
@@ -163,7 +163,7 @@ const SideBar = ({ setSelectedComponent }) => {
             </>
           )}
 
-          {/* ================= USER ================= */}
+          {/* ================= USER ONLY ================= */}
           {isAuthenticated && user?.role === "User" && (
             <button
               onClick={() => {
@@ -199,7 +199,7 @@ const SideBar = ({ setSelectedComponent }) => {
           </button>
         </div>
 
-        {/* ================= MOBILE CLOSE ================= */}
+        {/* MOBILE CLOSE */}
         <img
           src={closeIcon}
           alt="close"
@@ -208,7 +208,14 @@ const SideBar = ({ setSelectedComponent }) => {
         />
       </aside>
 
-      {addNewAdminPopup && <AddNewAdmin />}
+      {/* ================= POPUPS ================= */}
+      {addNewAdminPopup && (
+        <AddNewAdmin onClose={() => dispatch(toggleAddNewAdminPopup())} />
+      )}
+
+      {settingPopup && (
+        <SettingPopup onClose={() => dispatch(toggleSettingPopup())} />
+      )}
     </>
   );
 };
