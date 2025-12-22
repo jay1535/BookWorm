@@ -71,7 +71,7 @@ const Catalog = () => {
         <RecordBookPopup book={selectedBook} />
       )}
 
-      <main className="min-h-screen bg-gray-50 pt-28 pb-14">
+      <main className="min-h-screen bg-gray-50  text-black pt-28 pb-14">
         <div className="max-w-7xl mx-auto px-6 space-y-12">
 
           {/* ================= TITLE ================= */}
