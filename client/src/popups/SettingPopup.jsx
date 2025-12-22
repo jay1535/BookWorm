@@ -129,7 +129,7 @@ const SettingPopup = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+        className="relative w-full max-w-3xl bg-white text-black rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
       >
         {/* ================= LEFT PANEL ================= */}
         <div className="bg-black text-white p-10 flex flex-col justify-between items-center text-center">
