@@ -48,7 +48,7 @@ const AddNewAdmin = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+        className="relative w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ================= LEFT (BLACK) SIDE ================= */}

@@ -7,7 +7,7 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { sendToken } from "../utils/sendToken.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplates.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import cloudinary from "../config/cloudinary.js";
+import cloudinary from "../cloudinary.js";
 
 
 /* =====================================================
