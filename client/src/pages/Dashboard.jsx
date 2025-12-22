@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -9,19 +9,17 @@ import BookManagement from "../components/BookManagement";
 import Catalog from "../components/Catalog";
 import Users from "../components/Users";
 import MyBorrowedBooks from "../components/MyBorrowedBooks";
-import Header from "../layout/Header";
 
 const Dashboard = () => {
-  const [selectedComponent, setSelectedComponent] = React.useState("Dashboard");
+  const [selectedComponent, setSelectedComponent] = useState("Dashboard");
 
   const { user, isAuthenticated, loading } = useSelector(
     (state) => state.auth
   );
 
-  /* ⏳ WAIT FOR AUTH STATE */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="h-screen flex items-center justify-center bg-gray-100">
         <span className="text-gray-500 text-lg">
           Loading Dashboard...
         </span>
@@ -29,62 +27,39 @@ const Dashboard = () => {
     );
   }
 
-  /* 🔐 PROTECT DASHBOARD */
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  /* 🧠 RENDER CONTENT BASED ON SELECTION */
   const renderContent = () => {
     switch (selectedComponent) {
       case "Dashboard":
-        return user?.role === "Admin" ? (
-          <AdminDashboard />
-        ) : (
-          <UserDashboard />
-        );
+        return user?.role === "Admin" ? <AdminDashboard /> : <UserDashboard />;
 
       case "Books":
-        return user?.role === "Admin" ? (
-          <BookManagement />
-        ) : (
-          <BookManagement />
-        );
+        return <BookManagement />;
 
       case "Catalog":
-        return user?.role === "Admin" ? (
-          <Catalog />
-        ) : (
-          <Navigate to="/dashboard" replace />
-        );
+        return user?.role === "Admin" ? <Catalog /> : null;
 
       case "Users":
-        return user?.role === "Admin" ? (
-          <Users />
-        ) : (
-          <Navigate to="/dashboard" replace />
-        );
+        return user?.role === "Admin" ? <Users /> : null;
 
       case "Borrowed Books":
         return <MyBorrowedBooks />;
 
       default:
-        return user?.role === "Admin" ? (
-          <AdminDashboard />
-        ) : (
-          <UserDashboard />
-        );
+        return user?.role === "Admin" ? <AdminDashboard /> : <UserDashboard />;
     }
   };
 
   return (
-    <div className="relative flex min-h-screen bg-gray-100">
-      {/* 📂 SIDEBAR (Redux controlled) */}
+    <div className="relative md:flex h-screen md:overflow-hidden bg-gray-100">
+      {/* 📂 SIDEBAR */}
       <SideBar setSelectedComponent={setSelectedComponent} />
 
-      {/* 🧩 MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto">
-        
+      {/* 🧩 CONTENT */}
+      <main className="flex-1 overflow-visible md:overflow-y-auto">
         {renderContent()}
       </main>
     </div>
