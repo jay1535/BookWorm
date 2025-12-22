@@ -18,6 +18,7 @@ import {
 } from "../store/slices/popUpSlice";
 import AddNewAdmin from "../popups/AddNewAdmin";
 import SettingPopup from "../popups/SettingPopup";
+import { BookCopy } from "lucide-react";
 
 const SideBar = ({ setSelectedComponent }) => {
   const dispatch = useDispatch();
@@ -135,6 +136,22 @@ const SideBar = ({ setSelectedComponent }) => {
                 <img src={catalogIcon} className="h-5 w-5" />
                 Catalog
               </button>
+              {/* ================= USER ONLY ================= */}
+          {isAuthenticated && (user?.role === "User" || "Admin") && (
+            <button
+              onClick={() => {
+                setActive("Borrowed");
+                setSelectedComponent("Borrowed Books");
+                dispatch(toggleSidebar());
+              }}
+              className={`${menuBase} ${active === "Borrowed" ? activeStyle : idleStyle}`}
+            >{active === "Borrowed" && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+                )}
+              <BookCopy className="h-5 w-5" />
+              My Borrowed Books
+            </button>
+          )}
 
               <button
                 onClick={() => {
@@ -163,20 +180,7 @@ const SideBar = ({ setSelectedComponent }) => {
             </>
           )}
 
-          {/* ================= USER ONLY ================= */}
-          {isAuthenticated && user?.role === "User" && (
-            <button
-              onClick={() => {
-                setActive("Borrowed");
-                setSelectedComponent("Borrowed Books");
-                dispatch(toggleSidebar());
-              }}
-              className={`${menuBase} ${idleStyle}`}
-            >
-              <img src={catalogIcon} className="h-5 w-5" />
-              My Borrowed Books
-            </button>
-          )}
+          
 
           {/* MOBILE SETTINGS */}
           <button
