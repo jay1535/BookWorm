@@ -17,6 +17,7 @@ import {
   ArcElement,
 } from "chart.js";
 import logo from "../assets/black-logo.png";
+import Header from "../layout/Header";
 
 ChartJS.register(
   CategoryScale,
@@ -31,7 +32,8 @@ ChartJS.register(
 );
 
 const UserDashboard = () => {
-  return <>User</>;
+  return <>
+  User Dashboard</>;
 };
 
 export default UserDashboard;
