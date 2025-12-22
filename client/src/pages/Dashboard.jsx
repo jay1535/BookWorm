@@ -48,7 +48,7 @@ const Dashboard = () => {
         return user?.role === "Admin" ? (
           <BookManagement />
         ) : (
-          <Navigate to="/dashboard" replace />
+          <BookManagement />
         );
 
       case "Catalog":
