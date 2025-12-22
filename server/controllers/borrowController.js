@@ -64,11 +64,22 @@ export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
       title: book.title,
     },
     borrowDate: new Date(),
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     price: book.price,
     fine: 0,
     notified: false,
   });
+
+  /* ===== UPDATE USER.borrowedBooks ✅ ===== */
+  user.borrowedBooks.push({
+    bookId: borrow._id,          // Borrow record ID
+    bookTitle: book.title,
+    borrowedDate: borrow.borrowDate,
+    dueDate: borrow.dueDate,
+    returned: false,
+  });
+
+  await user.save();
 
   res.status(200).json({
     success: true,
@@ -76,6 +87,7 @@ export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
     borrowedBook: borrow,
   });
 });
+
 
 /* =====================================================
    ADMIN: FETCH ALL BORROWED BOOKS

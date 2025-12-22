@@ -1,17 +1,34 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddlewares.js";
+import { Borrow } from "../models/borrowModel.js";
 import { User } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 
 /* ================= GET ALL USERS ================= */
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find({ accountVerified: true });
+  const users = await User.find({ accountVerified: true }).lean();
+
+  const usersWithBorrowCount = await Promise.all(
+    users.map(async (user) => {
+      const activeBorrows = await Borrow.countDocuments({
+        "user.id": user._id,
+        returnDate: null, // ✅ only currently borrowed
+      });
+
+      return {
+        ...user,
+        borrowCount: activeBorrows,
+      };
+    })
+  );
+
   res.status(200).json({
     success: true,
-    users,
+    users: usersWithBorrowCount,
   });
 });
+
 
 /* ================= REGISTER / PROMOTE ADMIN ================= */
 export const registerNewAdmin = catchAsyncErrors(async (req, res, next) => {
