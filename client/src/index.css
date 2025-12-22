@@ -124,3 +124,27 @@ html {
     @apply bg-background text-foreground;
   }
 }
+/* Journey text animation */
+/* Journey subtitle animation */
+.animate-journey {
+  opacity: 0.3;
+  transform: translateX(-32px);
+  animation: journeySlide 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes journeySlide {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-journey {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+

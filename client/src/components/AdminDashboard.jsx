@@ -25,12 +25,11 @@ import {
 import { fetchAllUsers } from "../store/slices/userSlice";
 import { fetchAllBooks } from "../store/slices/bookSlice";
 import { fetchAllBorrowedBooks } from "../store/slices/borrowSlice";
-import {
-  toggleAddNewAdminPopup,
-} from "../store/slices/popUpSlice";
+import { toggleAddNewAdminPopup } from "../store/slices/popUpSlice";
 
 import AddNewAdmin from "../popups/AddNewAdmin";
 
+/* ================= CHART REGISTRATION ================= */
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -132,7 +131,9 @@ const AdminDashboard = () => {
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+    },
     scales: {
       y: {
         beginAtZero: true,
@@ -151,15 +152,13 @@ const AdminDashboard = () => {
 
       {/* ================= ADD ADMIN POPUP ================= */}
       {addNewAdminPopup && (
-        <AddNewAdmin
-          onClose={() => dispatch(toggleAddNewAdminPopup())}
-        />
+        <AddNewAdmin onClose={() => dispatch(toggleAddNewAdminPopup())} />
       )}
 
       <main className="min-h-screen bg-gray-50 pt-28 pb-14">
         <div className="max-w-7xl mx-auto px-6 space-y-14">
 
-          {/* ================= HEADER ================= */}
+          {/* ================= PAGE HEADER ================= */}
           <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-4xl font-bold text-black">
@@ -188,6 +187,8 @@ const AdminDashboard = () => {
 
           {/* ================= CHARTS ================= */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* INVENTORY PIE */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <h3 className="text-lg font-semibold text-black mb-1">
                 Inventory Distribution
@@ -196,13 +197,30 @@ const AdminDashboard = () => {
                 Available vs borrowed copies
               </p>
 
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-4">
                 <div className="w-64">
                   <Pie data={pieData} options={pieOptions} />
+                </div>
+
+                {/* TOTALS OUTSIDE PIE */}
+                <div className="flex gap-6 text-sm text-gray-600">
+                  <span>
+                    <strong className="text-black">
+                      {stats.availableCopies}
+                    </strong>{" "}
+                    Available
+                  </span>
+                  <span>
+                    <strong className="text-black">
+                      {stats.borrowedCopies}
+                    </strong>{" "}
+                    Borrowed
+                  </span>
                 </div>
               </div>
             </div>
 
+            {/* WEEKLY BAR */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <h3 className="text-lg font-semibold text-black mb-1">
                 Weekly Borrow Trend
@@ -211,8 +229,20 @@ const AdminDashboard = () => {
                 Actual borrowing activity (Sun–Sat)
               </p>
 
-              <div className="h-64">
-                <Bar data={barData} options={barOptions} />
+              <div className="flex flex-col">
+                <div className="relative h-64 w-full">
+                  <Bar data={barData} options={barOptions} />
+                </div>
+
+                {/* TOTAL OUTSIDE BAR */}
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-gray-600">
+                    Total Borrows This Week:{" "}
+                    <span className="font-semibold text-black">
+                      {weeklyTrend.counts.reduce((a, b) => a + b, 0)}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </section>
