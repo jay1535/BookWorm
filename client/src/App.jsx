@@ -14,29 +14,34 @@ import { fetchAllUsers } from "./store/slices/userSlice";
 
 
 function App() {
-   const dispatch = useDispatch();
-   const {user, isAuthenticated} = useSelector((state)=> state.auth);
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getUser());
-     if(isAuthenticated && user?.role === "Admin"){
-      dispatch(fetchAllUsers());
-     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "Admin") {
+      dispatch(fetchAllUsers());
+    }
+  }, [isAuthenticated, user, dispatch]);
+
   return (
     <Router>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/otp-verification/:email" element={<OTP />} />
-      <Route path="/password/forgot" element={<ForgotPassword />} />
-      <Route path="/password/reset/:token" element={<ResetPassword />} />
-    </Routes>
-    <ToastContainer theme="dark"/>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/otp-verification/:email" element={<OTP />} />
+        <Route path="/password/forgot" element={<ForgotPassword />} />
+        <Route path="/password/reset/:token" element={<ResetPassword />} />
+      </Routes>
+      <ToastContainer theme="dark" />
     </Router>
   );
 }
+
 
 export default App;
