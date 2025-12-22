@@ -5,17 +5,23 @@ import { Book } from "../models/bookModel.js";
 import { User } from "../models/userModel.js";
 import { calculateFine } from "../utils/fineCalculator.js";
 
-// 📌 Get all borrowed books by logged-in user
+/* =====================================================
+   USER: GET ALL BORROWED BOOKS (FROM Borrow COLLECTION)
+===================================================== */
 export const borrowedBooks = catchAsyncErrors(async (req, res, next) => {
-const {borrowedBooks} = req.user;
-res.status(200).json({
-  success: true,
-  borrowedBooks
-});
+  const borrowedBooks = await Borrow.find({
+    "user.id": req.user._id,
+  }).sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    borrowedBooks,
+  });
 });
 
-
-// 📌 Record borrowing a book
+/* =====================================================
+   USER: RECORD BORROWING A BOOK
+===================================================== */
 export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params; // bookId
   const { email } = req.body;
@@ -23,36 +29,31 @@ export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
   const book = await Book.findById(id);
   if (!book) return next(new ErrorHandler("Book not found", 404));
 
-  const user = await User.findOne({ email, accountVerified: true });
-  if (!user) return next(new ErrorHandler("User not found", 404));
-
   if (book.quantity === 0) {
     return next(new ErrorHandler("Book is out of stock", 400));
   }
 
-  const isAlreadyBorrowed = user.borrowedBooks.find(
-    (b) => b.bookId.toString() === id && b.returned === false
-  );
-  if (isAlreadyBorrowed) {
+  const user = await User.findOne({ email, accountVerified: true });
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  // Check if already borrowed
+  const alreadyBorrowed = await Borrow.findOne({
+    "user.id": user._id,
+    "book.id": book._id,
+    returnDate: null,
+  });
+
+  if (alreadyBorrowed) {
     return next(new ErrorHandler("Book is already borrowed", 400));
   }
 
-  // update book
+  /* ===== UPDATE BOOK ===== */
   book.quantity -= 1;
   book.availability = book.quantity > 0;
   await book.save();
 
-  // update user
-  user.borrowedBooks.push({
-    bookId: book._id,
-    bookTitle: book.title,
-    borrowedDate: new Date(),
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
-  await user.save();
-
-  // create borrow record
-  await Borrow.create({
+  /* ===== CREATE BORROW RECORD ===== */
+  const borrow = await Borrow.create({
     user: {
       id: user._id,
       name: user.name,
@@ -63,76 +64,73 @@ export const recordBorrowedBook = catchAsyncErrors(async (req, res, next) => {
       title: book.title,
     },
     borrowDate: new Date(),
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     price: book.price,
+    fine: 0,
+    notified: false,
   });
 
   res.status(200).json({
-    status: "success",
-    message: "Borrowed Book recorded successfully",
-    data: {
-      book: {
-        id: book._id,
-        title: book.title,
-        author: book.author,
-        price: book.price,
-      },
-    },
+    success: true,
+    message: "Book borrowed successfully",
+    borrowedBook: borrow,
   });
 });
 
-// 📌 Admin fetch borrowed book by borrowId
-export const getBorrowedBooksForAdmin = catchAsyncErrors(async (req, res, next) => {
-  const borrowedBooks = await Borrow.find();
- res.status(200).json({
-  success :true,
-  borrowedBooks,
-});
-});
+/* =====================================================
+   ADMIN: FETCH ALL BORROWED BOOKS
+===================================================== */
+export const getBorrowedBooksForAdmin = catchAsyncErrors(
+  async (req, res, next) => {
+    const borrowedBooks = await Borrow.find().sort({
+      createdAt: -1,
+    });
 
-// 📌 Return a borrowed book
+    res.status(200).json({
+      success: true,
+      borrowedBooks,
+    });
+  }
+);
+
+/* =====================================================
+   USER: RETURN BORROWED BOOK
+===================================================== */
 export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.params; // bookId
-  const { email } = req.body;
+  const { id } = req.params; // borrowId
 
-  const book = await Book.findById(id);
-  if (!book) return next(new ErrorHandler("Book not found", 404));
-
-  const user = await User.findOne({ email, accountVerified: true });
-  if (!user) return next(new ErrorHandler("User not found", 404));
-
-  const borrowedBook = user.borrowedBooks.find(
-    (b) => b.bookId.toString() === id && b.returned === false
-  );
-  if (!borrowedBook) {
-    return next(new ErrorHandler("You have not borrowed this book.", 400));
+  const borrow = await Borrow.findById(id);
+  if (!borrow) {
+    return next(new ErrorHandler("Borrow record not found", 404));
   }
 
-  borrowedBook.returned = true;
-  await user.save();
+  if (borrow.returnDate) {
+    return next(new ErrorHandler("Book already returned", 400));
+  }
+
+  /* ===== UPDATE BOOK ===== */
+  const book = await Book.findById(borrow.book.id);
+  if (!book) {
+    return next(new ErrorHandler("Book not found", 404));
+  }
 
   book.quantity += 1;
-  book.availability = book.quantity > 0;
+  book.availability = true;
   await book.save();
 
-  const borrow = await Borrow.findOne({
-    "book.id": id,
-    "user.email": email,
-    returnDate: null,
-  });
-  if (!borrow) return next(new ErrorHandler("Borrow record not found", 404));
+  /* ===== CALCULATE FINE ===== */
+  const fine = calculateFine(borrow.dueDate);
 
   borrow.returnDate = new Date();
-  const fine = calculateFine(borrow.dueDate);
   borrow.fine = fine;
   await borrow.save();
 
   res.status(200).json({
-    status: "success",
+    success: true,
     message:
-      fine !== 0
-        ? `Book returned successfully. Total Charge is: ${fine + book.price}`
-        : `Book returned successfully. The Total Charge is ${book.price}.`,
-    data: { fine },
+      fine > 0
+        ? `Book returned successfully. Fine: ₹${fine}`
+        : "Book returned successfully.",
+    fine,
   });
 });
