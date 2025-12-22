@@ -10,27 +10,41 @@ const popUpSlice = createSlice({
     returnBookPopup: false,
     addBookPopup: false,
 
+    /* ✅ NEW: DELETE BOOK POPUP */
+    deleteBookPopup: false,
+
     /* ✅ SIDEBAR STATE */
     sidebarOpen: false,
   },
+
   reducers: {
     toggleSettingPopup: (state) => {
       state.settingPopup = !state.settingPopup;
     },
+
     toggleAddNewAdminPopup: (state) => {
       state.addNewAdminPopup = !state.addNewAdminPopup;
     },
+
     toggleReadBookPopup: (state) => {
       state.readBookPopup = !state.readBookPopup;
     },
+
     toggleRecordBookPopup: (state) => {
       state.recordBookPopup = !state.recordBookPopup;
     },
+
     toggleReturnBookPopup: (state) => {
       state.returnBookPopup = !state.returnBookPopup;
     },
+
     toggleAddBookPopup: (state) => {
       state.addBookPopup = !state.addBookPopup;
+    },
+
+    /* ✅ NEW: DELETE BOOK TOGGLE */
+    toggleDeleteBookPopup: (state) => {
+      state.deleteBookPopup = !state.deleteBookPopup;
     },
 
     /* ✅ SIDEBAR TOGGLE */
@@ -45,6 +59,10 @@ const popUpSlice = createSlice({
       state.recordBookPopup = false;
       state.returnBookPopup = false;
       state.addBookPopup = false;
+
+      /* ✅ CLOSE DELETE BOOK POPUP */
+      state.deleteBookPopup = false;
+
       state.sidebarOpen = false;
     },
   },
@@ -57,7 +75,11 @@ export const {
   toggleRecordBookPopup,
   toggleReturnBookPopup,
   toggleAddBookPopup,
-  toggleSidebar,        // ✅ EXPORT ADDED
+
+  /* ✅ NEW EXPORT */
+  toggleDeleteBookPopup,
+
+  toggleSidebar,
   closeAllPopups,
 } = popUpSlice.actions;
 
