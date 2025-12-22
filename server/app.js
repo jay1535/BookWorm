@@ -16,19 +16,12 @@ import { removeUnverifiedAccounts } from './services/removeUnverifiedAccounts.js
 export const app = express();
 config({path:"./config/config.env"});
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://bookworm-five-zeta.vercel.app",
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
-
-
-
+app.use(cors({
+    origin:[process.env.FRONTEND_URL],
+    methods:["GET", "PUT", "POST", "DELETE"],
+    credentials:true,
+    
+}));
 
 
 app.use(cookieParser());
