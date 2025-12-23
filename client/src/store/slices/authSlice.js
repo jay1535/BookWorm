@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true;
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    loading: true,
+    loading: false,
     error: null,
     user: null,
     message: null,
