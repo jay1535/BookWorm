@@ -1,22 +1,26 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+let resend; // lazy initialization
 
 export const sendEmail = async ({ email, subject, message }) => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    service: process.env.SMTP_SERVICE,  // fixed typo
-    port: process.env.SMTP_PORT,        // fixed typo
-    auth: {
-      user: process.env.SMTP_MAIL,
-      pass: process.env.SMTP_PASSWORD   // fixed key
-    },
-  });
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is missing");
+    }
 
-  const mailOptions = {
-    from: process.env.SMTP_MAIL,
-    to: email,   // clearer naming
-    subject,
-    html: message,
-  };
+    if (!resend) {
+      resend = new Resend(process.env.RESEND_API_KEY);
+    }
 
-  await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "BookWorm <noreply@bookworm.app>", 
+      to: email,
+      subject,
+      html: message,
+    });
+
+  } catch (error) {
+    console.error("Resend Email Error:", error);
+    throw new Error("Email could not be sent");
+  }
 };
