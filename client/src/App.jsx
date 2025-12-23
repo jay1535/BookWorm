@@ -17,7 +17,9 @@ function App() {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
- 
+  useEffect(() => {
+    dispatch(getUser());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "Admin") {

@@ -42,9 +42,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
-   useEffect(() => {
-      dispatch(getUser());
-    }, [dispatch]);
+ 
   /* ================= NAVIGATION ================= */
   const goToDashboard = () => {
     if (isAuthenticated) {
