@@ -17,33 +17,32 @@ import { notifyUsers } from "./services/notifyUsers.js";
 import { removeUnverifiedAccounts } from "./services/removeUnverifiedAccounts.js";
 
 /* =====================================================
-   LOAD ENV VARIABLES (IMPORTANT)
+   LOAD ENV VARIABLES
 ===================================================== */
 config({ path: "./config/config.env" });
 
 export const app = express();
 
 /* =====================================================
-   MIDDLEWARES
+   CORE MIDDLEWARES (ORDER MATTERS)
 ===================================================== */
+
+// 🔥 CORS — STATIC ORIGIN (DO NOT USE FUNCTION)
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || origin === process.env.FRONTEND_URL) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "https://bookworm-steel.vercel.app", // ✅ EXACT frontend URL
     credentials: true,
   })
 );
 
-
+// 🔥 COOKIE PARSER — MUST COME BEFORE ROUTES
 app.use(cookieParser());
+
+// 🔥 BODY PARSERS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 🔥 FILE UPLOADS
 app.use(
   fileUpload({
     useTempFiles: true,
@@ -51,6 +50,7 @@ app.use(
   })
 );
 
+// 🔥 STATIC FILES
 app.use(express.static(path.join(process.cwd(), "public")));
 
 /* =====================================================
@@ -62,13 +62,13 @@ app.use("/api/v1/borrow", borrowRouter);
 app.use("/api/v1/user", userRouter);
 
 /* =====================================================
-   SERVICES & DB
+   SERVICES & DATABASE
 ===================================================== */
 notifyUsers();
 removeUnverifiedAccounts();
 connectDB();
 
 /* =====================================================
-   ERROR HANDLER
+   ERROR HANDLER (LAST)
 ===================================================== */
 app.use(errorMiddleware);
