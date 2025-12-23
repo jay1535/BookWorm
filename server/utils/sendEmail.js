@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-let resend; // lazy initialization
+let resend; 
 
 export const sendEmail = async ({ email, subject, message }) => {
   try {
@@ -13,7 +13,7 @@ export const sendEmail = async ({ email, subject, message }) => {
     }
 
     await resend.emails.send({
-      from: "BookWorm <noreply@bookworm.app>", 
+      from: "BookWorm <noreply@contact.intellidocs.in>", 
       to: email,
       subject,
       html: message,
