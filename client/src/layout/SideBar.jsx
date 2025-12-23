@@ -58,7 +58,7 @@ const SideBar = ({ setSelectedComponent }) => {
       setSelectedComponent(component);
       dispatch(toggleSidebar());
       setLoading(false);
-    }, 500); // ⏱ 3 seconds delay
+    }, 300); // ⏱ 3 seconds delay
   };
 
   const menuBase =
