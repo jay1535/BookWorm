@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const bookSlice = createSlice({
   name: "book",
@@ -130,6 +131,9 @@ export const addBook = (bookData) => async (dispatch) => {
     );
 
     dispatch(addBookSuccess(data.book));
+    dispatch(fetchAllBooks())
+    toast.success("Book added Successfully")
+
   } catch (error) {
     dispatch(
       addBookFailed(
@@ -149,11 +153,14 @@ export const deleteBook = (id) => async (dispatch) => {
     });
 
     dispatch(deleteBookSuccess(id));
+    dispatch(fetchAllBooks())
+    toast.success("Book deleted Successfully")
   } catch (error) {
     dispatch(
       deleteBookFailed(
         error.response?.data?.message || "Failed to delete book"
       )
     );
+    toast.error("Failed to dellete the book")
   }
 };

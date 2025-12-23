@@ -264,13 +264,13 @@ export const logout = () => async (dispatch) => {
 };
 
 export const getUser = () => async (dispatch) => {
-  dispatch(authSlice.actions.getUserRequest());
+  dispatch(getUserRequest());
   try {
     const res = await axios.get("/api/v1/auth/user");
-    dispatch(authSlice.actions.getUserSuccess(res.data));
+    dispatch(getUserSuccess(res.data));
   } catch (error) {
     dispatch(
-      authSlice.actions.getUserFailure(
+      getUserFailure(
         error.response?.data?.message || "User not authenticated"
       )
     );

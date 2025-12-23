@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { fetchAllBooks } from "./bookSlice";
 
 /* =====================================================
    INITIAL STATE
@@ -193,6 +195,8 @@ export const recordBorrowBook =
       );
 
       dispatch(recordBorrowBookSuccess(data.borrowedBook));
+      toast.success("Book Borrowed Successfully")
+      dispatch(fetchAllBooks())
     } catch (error) {
       dispatch(
         recordBorrowBookFailed(
@@ -215,6 +219,8 @@ export const returnBook = (borrowId) => async (dispatch) => {
     );
 
     dispatch(returnBookSuccess(borrowId));
+    toast.success("Book returned Successfully")
+    dispatch(fetchAllBooks())
   } catch (error) {
     dispatch(
       returnBookFailed(
@@ -236,6 +242,8 @@ export const fetchAllBorrowedBooks = () => async (dispatch) => {
     );
 
     dispatch(fetchAllBorrowedBooksSuccess(data.borrowedBooks));
+    dispatch(fetchAllBooks())
+    
   } catch (error) {
     dispatch(
       fetchAllBorrowedBooksFailed(
