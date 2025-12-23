@@ -8,8 +8,6 @@ import catalogIcon from "../assets/catalog.png";
 import settingIcon from "../assets/setting-white.png";
 import usersIcon from "../assets/people.png";
 import { RiAdminFill } from "react-icons/ri";
-import { BookCopy } from "lucide-react";
-
 import { useDispatch, useSelector } from "react-redux";
 import { logout, resetAuthSlice } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
@@ -18,10 +16,9 @@ import {
   toggleSettingPopup,
   toggleSidebar,
 } from "../store/slices/popUpSlice";
-
 import AddNewAdmin from "../popups/AddNewAdmin";
 import SettingPopup from "../popups/SettingPopup";
-import Loading from "../pages/Loading";
+import { BookCopy } from "lucide-react";
 
 const SideBar = ({ setSelectedComponent }) => {
   const dispatch = useDispatch();
@@ -35,7 +32,6 @@ const SideBar = ({ setSelectedComponent }) => {
   );
 
   const [active, setActive] = useState("Dashboard");
-  const [loading, setLoading] = useState(false);
 
   /* ================= TOAST HANDLING ================= */
   useEffect(() => {
@@ -48,18 +44,6 @@ const SideBar = ({ setSelectedComponent }) => {
       dispatch(resetAuthSlice());
     }
   }, [dispatch, error, message]);
-
-  /* ================= DELAY HANDLER ================= */
-  const delayedSelect = (component, activeName) => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setActive(activeName);
-      setSelectedComponent(component);
-      dispatch(toggleSidebar());
-      setLoading(false);
-    }, 300); // ⏱ 3 seconds delay
-  };
 
   const menuBase =
     "group relative w-full flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300";
@@ -97,10 +81,13 @@ const SideBar = ({ setSelectedComponent }) => {
 
         {/* ================= MENU ================= */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
-
           {/* DASHBOARD */}
           <button
-            onClick={() => delayedSelect("Dashboard", "Dashboard")}
+            onClick={() => {
+              setActive("Dashboard");
+              setSelectedComponent("Dashboard");
+              dispatch(toggleSidebar());
+            }}
             className={`${menuBase} ${
               active === "Dashboard" ? activeStyle : idleStyle
             }`}
@@ -114,7 +101,11 @@ const SideBar = ({ setSelectedComponent }) => {
 
           {/* BOOKS */}
           <button
-            onClick={() => delayedSelect("Books", "Books")}
+            onClick={() => {
+              setActive("Books");
+              setSelectedComponent("Books");
+              dispatch(toggleSidebar());
+            }}
             className={`${menuBase} ${
               active === "Books" ? activeStyle : idleStyle
             }`}
@@ -130,7 +121,11 @@ const SideBar = ({ setSelectedComponent }) => {
           {isAuthenticated && user?.role === "Admin" && (
             <>
               <button
-                onClick={() => delayedSelect("Catalog", "Catalog")}
+                onClick={() => {
+                  setActive("Catalog");
+                  setSelectedComponent("Catalog");
+                  dispatch(toggleSidebar());
+                }}
                 className={`${menuBase} ${
                   active === "Catalog" ? activeStyle : idleStyle
                 }`}
@@ -141,9 +136,14 @@ const SideBar = ({ setSelectedComponent }) => {
                 <img src={catalogIcon} className="h-5 w-5" />
                 Catalog
               </button>
+    
 
               <button
-                onClick={() => delayedSelect("Users", "Users")}
+                onClick={() => {
+                  setActive("Users");
+                  setSelectedComponent("Users");
+                  dispatch(toggleSidebar());
+                }}
                 className={`${menuBase} ${
                   active === "Users" ? activeStyle : idleStyle
                 }`}
@@ -165,23 +165,28 @@ const SideBar = ({ setSelectedComponent }) => {
             </>
           )}
 
-          {/* ================= USER ================= */}
+                    {/* ================= USER ONLY ================= */}
           {isAuthenticated && (user?.role === "User" || user?.role === "Admin") && (
-            <button
-              onClick={() =>
-                delayedSelect("Borrowed Books", "Borrowed")
-              }
-              className={`${menuBase} ${
-                active === "Borrowed" ? activeStyle : idleStyle
-              }`}
-            >
-              {active === "Borrowed" && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
-              )}
-              <BookCopy className="h-5 w-5" />
-              My Borrowed Books
-            </button>
-          )}
+  <button
+    onClick={() => {
+      setActive("Borrowed");
+      setSelectedComponent("Borrowed Books");
+      dispatch(toggleSidebar());
+    }}
+    className={`${menuBase} ${
+      active === "Borrowed" ? activeStyle : idleStyle
+    }`}
+  >
+    {active === "Borrowed" && (
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+    )}
+    <BookCopy className="h-5 w-5" />
+    My Borrowed Books
+  </button>
+)}
+
+
+          
 
           {/* MOBILE SETTINGS */}
           <button
@@ -221,9 +226,6 @@ const SideBar = ({ setSelectedComponent }) => {
       {settingPopup && (
         <SettingPopup onClose={() => dispatch(toggleSettingPopup())} />
       )}
-
-      {/* ================= LOADER ================= */}
-      {loading && <Loading />}
     </>
   );
 };
