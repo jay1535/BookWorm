@@ -45,7 +45,6 @@ const ReturnBookPopup = ({ borrow }) => {
   /* ================= HANDLERS ================= */
   const handleClose = () => {
     if (loading) return;
-
     dispatch(toggleReturnBookPopup());
     dispatch(clearBorrowMessage());
     dispatch(clearBorrowError());
@@ -57,38 +56,48 @@ const ReturnBookPopup = ({ borrow }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto"
       onClick={handleClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+        className="
+          relative mx-auto my-6
+          w-[95%] max-w-4xl
+          max-h-[95vh]
+          bg-white text-black
+          rounded-2xl shadow-2xl
+          overflow-y-auto
+          grid grid-cols-1 md:grid-cols-2
+        "
       >
         {/* ================= LEFT PANEL ================= */}
-        <div className="bg-black text-white p-10 flex flex-col justify-between">
+        <div className="bg-black text-white p-6 md:p-10 flex flex-col justify-between">
           <div className="flex flex-col items-center text-center">
             <img
               src={logoWhite}
               alt="BookWorm"
-              className="h-16 mb-6 select-none"
+              className="h-14 md:h-16 mb-4 select-none"
             />
 
-            <div className="flex items-center gap-3 mb-4">
-              <img src={bookIcon} alt="Book" className="w-8 h-8" />
-              <h2 className="text-2xl font-semibold">Return Book</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <img src={bookIcon} alt="Book" className="w-7 h-7" />
+              <h2 className="text-xl md:text-2xl font-semibold">
+                Return Book
+              </h2>
             </div>
 
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-300 text-xs md:text-sm leading-relaxed max-w-xs">
               Confirm the return of this book. Any applicable fine
               will be calculated automatically.
             </p>
           </div>
 
-          <div className="mt-10 space-y-2">
+          <div className="mt-8 space-y-2">
             <p className="text-xs uppercase tracking-wide text-gray-400">
               Borrowed Book
             </p>
-            <p className="text-lg font-semibold">
+            <p className="text-base md:text-lg font-semibold">
               {borrow.book?.title}
             </p>
             <p className="text-sm text-gray-400">
@@ -98,21 +107,21 @@ const ReturnBookPopup = ({ borrow }) => {
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
-        <div className="relative p-10">
+        <div className="relative p-6 md:p-10 overflow-y-auto">
           {/* CLOSE */}
           <button
             onClick={handleClose}
-            className="absolute top-5 right-5"
+            className="absolute top-4 right-4"
             aria-label="Close popup"
           >
             <img
               src={closeIcon}
               alt="Close"
-              className="w-6 h-6 opacity-70 hover:opacity-100 transition"
+              className="w-5 h-5 opacity-70 hover:opacity-100 transition"
             />
           </button>
 
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
             Return Details
           </h3>
 

@@ -44,40 +44,50 @@ const AddNewAdmin = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
         onClick={(e) => e.stopPropagation()}
+        className="
+          relative mx-auto my-6
+          w-[95%] max-w-4xl
+          max-h-[95vh]
+          bg-white text-black
+          rounded-2xl shadow-2xl
+          overflow-y-auto
+          grid grid-cols-1 md:grid-cols-2
+        "
       >
         {/* ================= LEFT (BLACK) SIDE ================= */}
-        <div className="bg-black text-white p-10 flex flex-col justify-between">
-          {/* TOP: CENTERED LOGO */}
+        <div className="bg-black text-white p-6 md:p-10 flex flex-col justify-between">
+          {/* TOP */}
           <div className="flex flex-col items-center text-center">
             <img
               src={logoWhite}
               alt="BookWorm"
-              className="h-16 mb-6 select-none"
+              className="h-14 md:h-16 mb-4 select-none"
             />
 
-            <div className="flex items-center gap-3 mb-4">
-              <img src={keyIcon} alt="Admin" className="w-8 h-8" />
-              <h2 className="text-2xl font-semibold">Add New Admin</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <img src={keyIcon} alt="Admin" className="w-7 h-7" />
+              <h2 className="text-xl md:text-2xl font-semibold">
+                Add New Admin
+              </h2>
             </div>
 
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-300 text-xs md:text-sm leading-relaxed max-w-xs">
               Create a new administrator with elevated access to manage the
               system securely.
             </p>
           </div>
 
           {/* BOTTOM: AVATAR PREVIEW */}
-          <div className="mt-10 flex items-center gap-4">
+          <div className="mt-8 flex items-center gap-4">
             <img
               src={avatarPreview}
               alt="Avatar Preview"
-              className="w-14 h-14 rounded-full object-cover border border-gray-700"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border border-gray-700"
             />
             <div>
               <p className="text-sm font-medium">Admin Avatar</p>
@@ -87,20 +97,22 @@ const AddNewAdmin = ({ onClose }) => {
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
-        <div className="relative p-10">
-          <button onClick={onClose} className="absolute top-5 right-5">
+        <div className="relative p-6 md:p-10 overflow-y-auto">
+          {/* CLOSE */}
+          <button onClick={onClose} className="absolute top-4 right-4">
             <img
               src={closeIcon}
               alt="Close"
-              className="w-6 h-6 opacity-70 hover:opacity-100 transition"
+              className="w-5 h-5 opacity-70 hover:opacity-100 transition"
             />
           </button>
 
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
             Admin Details
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* NAME */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -113,6 +125,7 @@ const AddNewAdmin = ({ onClose }) => {
               />
             </div>
 
+            {/* EMAIL */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
@@ -126,6 +139,7 @@ const AddNewAdmin = ({ onClose }) => {
               />
             </div>
 
+            {/* PASSWORD */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
@@ -148,6 +162,7 @@ const AddNewAdmin = ({ onClose }) => {
               </div>
             </div>
 
+            {/* AVATAR */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Avatar
@@ -155,7 +170,7 @@ const AddNewAdmin = ({ onClose }) => {
               <div className="flex items-center gap-4">
                 <img
                   src={avatarPreview}
-                  className="w-16 h-16 rounded-full object-cover border"
+                  className="w-14 h-14 rounded-full object-cover border"
                 />
                 <label className="cursor-pointer text-sm font-medium text-black">
                   Upload Image
@@ -163,12 +178,13 @@ const AddNewAdmin = ({ onClose }) => {
                     type="file"
                     accept="image/*"
                     onChange={handleAvatarChange}
-                    className="hidden"
+                    className="y-auto"
                   />
                 </label>
               </div>
             </div>
 
+            {/* SUBMIT */}
             <button
               type="submit"
               disabled={loading}

@@ -51,7 +51,6 @@ const RecordBookPopup = ({ book }) => {
   /* ================= SUBMIT ================= */
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!email || book.quantity === 0) return;
 
     dispatch(
@@ -65,7 +64,6 @@ const RecordBookPopup = ({ book }) => {
   /* ================= CLOSE HANDLER ================= */
   const handleClose = () => {
     if (loading) return;
-
     dispatch(toggleRecordBookPopup());
     dispatch(clearBorrowMessage());
     dispatch(clearBorrowError());
@@ -73,38 +71,50 @@ const RecordBookPopup = ({ book }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto"
       onClick={handleClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-white text-black rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+        className="
+          relative mx-auto my-6
+          w-[95%] max-w-4xl
+          max-h-[95vh]
+          bg-white text-black
+          rounded-2xl shadow-2xl
+          overflow-y-auto
+          grid grid-cols-1 md:grid-cols-2
+        "
       >
         {/* ================= LEFT PANEL ================= */}
-        <div className="bg-black text-white p-10 flex flex-col justify-between">
+        <div className="bg-black text-white p-6 md:p-10 flex flex-col justify-between">
           <div className="flex flex-col items-center text-center">
             <img
               src={logoWhite}
               alt="BookWorm"
-              className="h-16 mb-6 select-none"
+              className="h-14 md:h-16 mb-4 select-none"
             />
 
-            <div className="flex items-center gap-3 mb-4">
-              <img src={bookIcon} alt="Book" className="w-8 h-8" />
-              <h2 className="text-2xl font-semibold">Borrow Book</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <img src={bookIcon} alt="Book" className="w-7 h-7" />
+              <h2 className="text-xl md:text-2xl font-semibold">
+                Borrow Book
+              </h2>
             </div>
 
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-300 text-xs md:text-sm leading-relaxed max-w-xs">
               Record a new borrowing entry. Please verify the user
               email before submission.
             </p>
           </div>
 
-          <div className="mt-10 space-y-2">
+          <div className="mt-8 space-y-2">
             <p className="text-xs uppercase tracking-wide text-gray-400">
               Selected Book
             </p>
-            <p className="text-lg font-semibold">{book.title}</p>
+            <p className="text-base md:text-lg font-semibold">
+              {book.title}
+            </p>
             <p className="text-sm text-gray-400">
               Available: {book.quantity}
             </p>
@@ -112,21 +122,21 @@ const RecordBookPopup = ({ book }) => {
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
-        <div className="relative p-10">
+        <div className="relative p-6 md:p-10 overflow-y-auto">
           {/* CLOSE */}
           <button
             onClick={handleClose}
-            className="absolute top-5 right-5"
+            className="absolute top-4 right-4"
             aria-label="Close popup"
           >
             <img
               src={closeIcon}
               alt="Close"
-              className="w-6 h-6 opacity-70 hover:opacity-100 transition"
+              className="w-5 h-5 opacity-70 hover:opacity-100 transition"
             />
           </button>
 
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
             Borrow Details
           </h3>
 
@@ -158,20 +168,22 @@ const RecordBookPopup = ({ book }) => {
 
             {/* INFO */}
             <div className="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-600">
-              <p>📅 Borrow duration: <strong>7 days</strong></p>
+              <p>
+                📅 Borrow duration: <strong>7 days</strong>
+              </p>
               <p className="mt-1">
                 💰 Fine may apply if returned late.
               </p>
             </div>
 
-            {/* SUCCESS MESSAGE */}
+            {/* SUCCESS */}
             {message && (
               <div className="rounded-lg bg-green-100 px-4 py-3 text-sm text-green-700">
                 ✅ {message}
               </div>
             )}
 
-            {/* ERROR MESSAGE */}
+            {/* ERROR */}
             {error && (
               <div className="rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
                 ❌ {error}

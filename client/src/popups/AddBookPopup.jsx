@@ -63,42 +63,49 @@ const AddBookPopup = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+        className="
+          relative mx-auto my-6
+          w-[95%] max-w-4xl
+          max-h-[95vh]
+          bg-white rounded-2xl shadow-2xl
+          overflow-y-auto
+          grid grid-cols-1 md:grid-cols-2
+        "
       >
         {/* ================= LEFT PANEL ================= */}
-        <div className="bg-black text-white p-10 flex flex-col justify-center items-center text-center">
+        <div className="bg-black text-white p-6 md:p-10 flex flex-col justify-center items-center text-center">
           <img
             src={logoWhite}
             alt="BookWorm"
-            className="h-16 mb-6 select-none"
+            className="h-14 md:h-16 mb-4 select-none"
           />
 
-          <h2 className="text-2xl font-semibold mb-3">
+          <h2 className="text-xl md:text-2xl font-semibold mb-2">
             Add New Book
           </h2>
 
-          <p className="text-gray-300 text-sm max-w-xs">
+          <p className="text-gray-300 text-xs md:text-sm max-w-xs">
             Add a new book to the library inventory with complete details.
           </p>
         </div>
 
         {/* ================= RIGHT PANEL ================= */}
-        <div className="relative p-10 bg-white">
+        <div className="relative p-6 md:p-10 bg-white overflow-y-auto">
           {/* CLOSE */}
-          <button onClick={onClose} className="absolute top-5 right-5">
+          <button onClick={onClose} className="absolute top-4 right-4">
             <img
               src={closeIcon}
               alt="Close"
-              className="w-6 h-6 opacity-70 hover:opacity-100 transition"
+              className="w-5 h-5 opacity-70 hover:opacity-100 transition"
             />
           </button>
 
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
             Book Details
           </h3>
 
@@ -147,7 +154,7 @@ const AddBookPopup = ({ onClose }) => {
             </div>
 
             {/* PRICE & QUANTITY */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Price (₹)
