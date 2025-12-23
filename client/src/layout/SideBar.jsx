@@ -136,22 +136,7 @@ const SideBar = ({ setSelectedComponent }) => {
                 <img src={catalogIcon} className="h-5 w-5" />
                 Catalog
               </button>
-              {/* ================= USER ONLY ================= */}
-          {isAuthenticated && (user?.role === "User" || "Admin") && (
-            <button
-              onClick={() => {
-                setActive("Borrowed");
-                setSelectedComponent("Borrowed Books");
-                dispatch(toggleSidebar());
-              }}
-              className={`${menuBase} ${active === "Borrowed" ? activeStyle : idleStyle}`}
-            >{active === "Borrowed" && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
-                )}
-              <BookCopy className="h-5 w-5" />
-              My Borrowed Books
-            </button>
-          )}
+    
 
               <button
                 onClick={() => {
@@ -179,6 +164,27 @@ const SideBar = ({ setSelectedComponent }) => {
               </button>
             </>
           )}
+
+                    {/* ================= USER ONLY ================= */}
+          {isAuthenticated && (user?.role === "User" || user?.role === "Admin") && (
+  <button
+    onClick={() => {
+      setActive("Borrowed");
+      setSelectedComponent("Borrowed Books");
+      dispatch(toggleSidebar());
+    }}
+    className={`${menuBase} ${
+      active === "Borrowed" ? activeStyle : idleStyle
+    }`}
+  >
+    {active === "Borrowed" && (
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-black" />
+    )}
+    <BookCopy className="h-5 w-5" />
+    My Borrowed Books
+  </button>
+)}
+
 
           
 
