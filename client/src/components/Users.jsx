@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Header from "../layout/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllUsers } from "../store/slices/userSlice";
+import Loading from "../pages/Loading";
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -39,9 +40,7 @@ const Users = () => {
     return (
       <>
         <Header />
-        <main className="flex-1 p-6 pt-28 bg-gray-50 flex items-center justify-center">
-          <p className="text-gray-500 text-lg">Loading users...</p>
-        </main>
+        <Loading/>
       </>
     );
   }

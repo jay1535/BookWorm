@@ -15,6 +15,7 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserBorrowedBooks } from "../store/slices/borrowSlice";
+import Loading from "../pages/Loading";
 
 /* ================= CENTER TEXT PLUGIN ================= */
 const centerTextPlugin = {
@@ -123,9 +124,7 @@ const UserDashboard = () => {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-gray-50 pt-28 flex items-center justify-center">
-          <p className="text-gray-500 text-lg">Loading dashboard...</p>
-        </main>
+        <Loading/>
       </>
     );
   }

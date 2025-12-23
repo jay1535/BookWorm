@@ -7,6 +7,7 @@ import { fetchUserBorrowedBooks } from "../store/slices/borrowSlice";
 import { toggleReturnBookPopup } from "../store/slices/popUpSlice";
 
 import ReturnBookPopup from "../popups/ReturnBookPopup";
+import Loading from "../pages/Loading";
 
 const MyBorrowedBooks = () => {
   const dispatch = useDispatch();
@@ -83,11 +84,7 @@ const MyBorrowedBooks = () => {
     return (
       <>
         <Header />
-        <main className="flex-1 p-6 pt-28 bg-gray-50 flex items-center justify-center">
-          <p className="text-gray-500 text-lg">
-            Loading borrowed books...
-          </p>
-        </main>
+       <Loading/>
       </>
     );
   }

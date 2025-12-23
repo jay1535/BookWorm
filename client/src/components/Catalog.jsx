@@ -21,6 +21,7 @@ import {
 
 import RecordBookPopup from "../popups/RecordBookPopup";
 import ReturnBookPopup from "../popups/ReturnBookPopup";
+import Loading from "../pages/Loading";
 
 const Catalog = () => {
   const dispatch = useDispatch();
@@ -107,9 +108,7 @@ const Catalog = () => {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-gray-50 pt-28 flex items-center justify-center">
-          <p className="text-gray-500 text-lg">Loading catalog…</p>
-        </main>
+        <Loading/>
       </>
     );
   }

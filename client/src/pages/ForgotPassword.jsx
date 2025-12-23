@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import logo from "../assets/black-logo.png";
 import logo_with_title from "../assets/logo-with-title.png";
 import { forgotPassword, clearAuthError, clearAuthMessage } from "../store/slices/authSlice";
+import Loading from "./Loading";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -84,7 +85,7 @@ const ForgotPassword = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-black text-white font-semibold disabled:opacity-60"
             >
-              {loading ? "Sending link..." : "Send Reset Link"}
+              {loading ? <Loading/> : "Send Reset Link"}
             </button>
           </form>
 

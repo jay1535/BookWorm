@@ -6,6 +6,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register, resetAuthSlice } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
+import Loading from "./Loading";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -132,7 +133,7 @@ const Register = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-black text-white font-semibold disabled:opacity-60"
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? <Loading/> : "Create Account"}
             </button>
           </form>
 

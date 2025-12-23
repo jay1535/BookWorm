@@ -7,6 +7,7 @@ import { login, resetAuthSlice } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 
 
@@ -110,7 +111,7 @@ useEffect(() => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-black text-white font-semibold disabled:opacity-60"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? <Loading/> : "Login"}
             </button>
           </form>
 

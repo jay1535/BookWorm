@@ -6,6 +6,7 @@ import logo from "../assets/black-logo.png";
 import logo_with_title from "../assets/logo-with-title.png";
 import { otpVerification, resetAuthSlice } from "../store/slices/authSlice";
 import { ArrowLeft } from "lucide-react";
+import Loading from "./Loading";
 
 const OTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", ""]); // ✅ 5 digits
@@ -156,7 +157,7 @@ const OTP = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-black text-white font-semibold disabled:opacity-60"
             >
-              {loading ? "Verifying..." : "Verify OTP"}
+              {loading ? <Loading/> : "Verify OTP"}
             </button>
           </form>
 

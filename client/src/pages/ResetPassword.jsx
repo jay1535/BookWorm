@@ -6,6 +6,7 @@ import logo from "../assets/black-logo.png";
 import logo_with_title from "../assets/logo-with-title.png";
 import { Eye, EyeOff } from "lucide-react";
 import { resetPassword } from "../store/slices/authSlice";
+import Loading from "./Loading";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -131,7 +132,7 @@ const ResetPassword = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-black text-white font-semibold disabled:opacity-60"
             >
-              {loading ? "Resetting..." : "Reset Password"}
+              {loading ? <Loading/> : "Reset Password"}
             </button>
           </form>
 

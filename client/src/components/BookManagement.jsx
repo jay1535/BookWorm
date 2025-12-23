@@ -27,6 +27,7 @@ import {
   Plus,
   ClipboardPlus,
 } from "lucide-react";
+import Loading from "../pages/Loading";
 
 const BookManagement = () => {
   const dispatch = useDispatch();
@@ -91,9 +92,7 @@ const BookManagement = () => {
     return (
       <>
         <Header />
-        <main className="flex-1 p-6 pt-28 bg-gray-50 flex items-center justify-center">
-          <p className="text-gray-500 text-lg">Loading books...</p>
-        </main>
+       <Loading/>
       </>
     );
   }

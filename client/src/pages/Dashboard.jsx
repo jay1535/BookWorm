@@ -9,6 +9,7 @@ import BookManagement from "../components/BookManagement";
 import Catalog from "../components/Catalog";
 import Users from "../components/Users";
 import MyBorrowedBooks from "../components/MyBorrowedBooks";
+import Loading from "./Loading";
 
 const Dashboard = () => {
   const [selectedComponent, setSelectedComponent] = useState("Dashboard");
@@ -19,11 +20,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-100">
-        <span className="text-gray-500 text-lg">
-          Loading Dashboard...
-        </span>
-      </div>
+      <Loading/>
     );
   }
 
