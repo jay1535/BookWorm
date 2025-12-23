@@ -220,7 +220,7 @@ const MyBorrowedBooks = () => {
                     className="
                       mt-4
                       w-full
-                      min-h-[42px]
+                      min-h-10.5
                       rounded-lg
                       bg-black
                       px-4 py-2
