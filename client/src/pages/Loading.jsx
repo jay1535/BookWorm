@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../assets/white-logo.png";
-import logoBlack from "../assets/white-logo.png";
+import logoBlack from "../assets/black-logo.png";
 
 const Loading = ({ theme = "light" }) => {
   return (
