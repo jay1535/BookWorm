@@ -246,7 +246,9 @@ export const login = (data) => async (dispatch) => {
   dispatch(LoginRequest());
   try {
     const res = await axios.post("/api/v1/auth/login", data);
+    
     dispatch(LoginSuccess(res.data));
+    dispatch(getUser());
   } catch (error) {
     dispatch(LoginFailure(error.response?.data?.message));
   }
