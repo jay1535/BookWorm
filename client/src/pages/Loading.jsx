@@ -1,8 +1,12 @@
 import React from "react";
-import logo from "../assets/white-logo.png";
+import logoWhite from "../assets/white-logo.png";
 import logoBlack from "../assets/black-logo.png";
 
-const Loading = ({ theme = "light" }) => {
+const Loading = () => {
+  const isDark =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark");
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-black text-black dark:text-white overflow-hidden">
 
@@ -16,7 +20,7 @@ const Loading = ({ theme = "light" }) => {
         {/* LOGO */}
         <div className="relative">
           <img
-            src={theme === "light" ? logoBlack : logo}
+            src={isDark ? logoWhite : logoBlack}
             alt="BookWorm"
             className="w-16 h-16 animate-pulse-soft"
           />
