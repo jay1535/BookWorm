@@ -20,15 +20,16 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, resetAuthSlice } from "../store/slices/authSlice";
+import { getUser, logout, resetAuthSlice } from "../store/slices/authSlice";
 
 const THEME_KEY = "bookworm-theme";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
 
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [theme, setTheme] = useState(
@@ -41,6 +42,9 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
+   useEffect(() => {
+      dispatch(getUser());
+    }, [dispatch]);
   /* ================= NAVIGATION ================= */
   const goToDashboard = () => {
     if (isAuthenticated) {
@@ -230,42 +234,12 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   <div className="max-w-5xl mx-auto px-6 md:px-8 pt-14 md:pt-20 pb-28 md:pb-36 text-center">
 
-  {/* MAIN HEADING */}
-<h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
-  <span
-    className="
-      relative inline-block
-      bg-gradient-to-tr
-      from-green-500
-      via-emerald-500
-      to-green-600
-      bg-[length:200%_200%]
-      bg-clip-text
-      text-transparent
-      animate-diagonal-glow
-
-      /* Light mode glow */
-      drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]
-
-      /* Dark mode enhancement */
-      dark:from-green-400
-      dark:via-emerald-400
-      dark:to-green-500
-      dark:drop-shadow-[0_0_16px_rgba(34,197,94,0.7)]
-    "
-  >
-    Organize Libraries
-  </span>
-
-  <br />
-
-  <span className="opacity-70 text-slate-700 dark:text-white">
-    Without the Chaos...
-  </span>
-</h2>
-
-
-
+    {/* MAIN HEADING */}
+    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
+      Organize Libraries
+      <br />
+      <span className="opacity-50">Without the Chaos...</span>
+    </h2>
 
    
 
