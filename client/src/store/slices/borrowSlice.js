@@ -196,7 +196,8 @@ export const recordBorrowBook =
 
       dispatch(recordBorrowBookSuccess(data.borrowedBook));
       toast.success("Book Borrowed Successfully")
-      dispatch(fetchAllBooks())
+      
+      dispatch(fetchAllBorrowedBooks())
     } catch (error) {
       dispatch(
         recordBorrowBookFailed(
@@ -220,6 +221,7 @@ export const returnBook = (borrowId) => async (dispatch) => {
 
     dispatch(returnBookSuccess(borrowId));
     toast.success("Book returned Successfully")
+    dispatch(fetchAllBorrowedBooks())
     dispatch(fetchAllBooks())
   } catch (error) {
     dispatch(
