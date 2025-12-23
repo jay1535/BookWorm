@@ -230,26 +230,35 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   <div className="max-w-5xl mx-auto px-6 md:px-8 pt-14 md:pt-20 pb-28 md:pb-36 text-center">
 
-    {/* MAIN HEADING */}
-    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
-      Organize Libraries
-      <br />
-      <span className="opacity-50">Without the Chaos...</span>
-    </h2>
+  {/* MAIN HEADING */}
+<h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
+  <span
+    className="
+      relative
+      inline-block
+      bg-linear-to-tr
+      from-green-400
+      via-emerald-400
+      to-green-600
+      bg-size[200%_200%]
+      bg-clip-text
+      text-transparent
+      animate-diagonal-glow
+      drop-shadow-[0_0_14px_rgba(34,197,94,0.6)]
+    "
+  >
+    Organize Libraries
+  </span>
 
-    {/* ANIMATED SUBTITLE */}
-    <p
-  className="
-    mt-4 md:mt-6
-    text-xl sm:text-2xl md:text-3xl
-    font-semibold
-    text-gray-500 dark:text-gray-400
-    animate-journey
-    tracking-wide
-  "
->
-  Login, Refresh, Start Your Journey
-</p>
+  <br />
+  <span className="opacity-60 text-white">
+    Without the Chaos...
+  </span>
+</h2>
+
+
+
+   
 
 
     {/* DESCRIPTION */}
