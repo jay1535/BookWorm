@@ -96,8 +96,7 @@ const authSlice = createSlice({
     getUserFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      state.isAuthenticated = false;
-      state.user = null;
+      
     },
 
     forgotPasswordRequest: (state) => {
@@ -248,7 +247,7 @@ export const login = (data) => async (dispatch) => {
     const res = await axios.post("/api/v1/auth/login", data);
     
     dispatch(LoginSuccess(res.data));
-    dispatch(getUser());
+    
   } catch (error) {
     dispatch(LoginFailure(error.response?.data?.message));
   }
