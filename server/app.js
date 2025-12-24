@@ -27,6 +27,7 @@ export const app = express();
    MIDDLEWARES
 ===================================================== */
 const allowedOrigins = [
+   "https://bookworm-steel.vercel.app",
   "https://bookworm.intellidocs.in",
   "https://www.bookworm.intellidocs.in",
   "http://localhost:5173",
