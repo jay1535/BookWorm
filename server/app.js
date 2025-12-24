@@ -26,13 +26,30 @@ export const app = express();
 /* =====================================================
    MIDDLEWARES
 ===================================================== */
+const allowedOrigins = [
+  "https://bookworm.intellidocs.in",
+  "https://www.bookworm.intellidocs.in",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+
 
 app.use(cookieParser());
 app.use(express.json());
