@@ -14,13 +14,27 @@ const Users = () => {
     dispatch(fetchAllUsers());
   }, [dispatch]);
 
+  /* ================= DATE (DD-MM-YYYY + time next line) ================= */
   const formatDate = (timeStamp) => {
     if (!timeStamp) return "—";
     const date = new Date(timeStamp);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`;
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+
+    return (
+      <>
+        {day}-{month}-{year}
+        <br />
+        {hours}:{minutes} {ampm}
+      </>
+    );
   };
 
   const filteredUsers = useMemo(() => {
@@ -40,7 +54,7 @@ const Users = () => {
     return (
       <>
         <Header />
-        <Loading/>
+        <Loading />
       </>
     );
   }
@@ -110,7 +124,7 @@ const Users = () => {
 
                 <div className="col-span-2">
                   <p className="text-gray-500">Registered</p>
-                  <p className="text-sm">
+                  <p className="text-sm leading-tight">
                     {formatDate(user.createdAt)}
                   </p>
                 </div>
@@ -163,7 +177,7 @@ const Users = () => {
                         {user.borrowCount}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-gray-600 leading-tight">
                         {formatDate(user.createdAt)}
                       </td>
                     </tr>

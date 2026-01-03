@@ -36,79 +36,70 @@ const Catalog = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedBorrow, setSelectedBorrow] = useState(null);
 
-  /* ================= FETCH DATA ================= */
+  /* 🔹 live time for fine */
+  const [now, setNow] = useState(Date.now());
+
+  /* ================= FETCH ================= */
   useEffect(() => {
     dispatch(fetchAllBooks());
     dispatch(fetchAllBorrowedBooks());
   }, [dispatch]);
+
+  /* 🔹 re-render every minute */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   /* ================= CLEAR ERROR ================= */
   useEffect(() => {
     if (error) dispatch(clearBookError());
   }, [error, dispatch]);
 
-  /* ================= SEARCH ================= */
-  const filteredBooks = useMemo(() => {
-    const key = search.toLowerCase();
-    return books?.filter(
-      (b) =>
-        b.title?.toLowerCase().includes(key) ||
-        b.author?.toLowerCase().includes(key)
+  /* ================= DATE (DD-MM-YYYY) ================= */
+  const formatDate = (date) => {
+    if (!date) return "—";
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  /* ================= LIVE FINE ================= */
+  const calculateLiveFine = (dueDate) => {
+    const today = new Date(now);
+    const due = new Date(dueDate);
+
+    if (due >= today) return 0;
+
+    const finePerDay = 5;
+    const daysLate = Math.ceil(
+      (today.getTime() - due.getTime()) / (1000 * 60 * 60 * 24)
     );
-  }, [books, search]);
 
-  /* ================= BORROW LOOKUP =================
-     For each book, find:
-     - activeBorrow (no returnDate)
-     - lastReturned (most recent returned record)
-  ================================================== */
-  const borrowLookup = useMemo(() => {
-    const map = {};
-
-    allBorrowedBooks?.forEach((borrow) => {
-      const bookId = borrow.book.id;
-
-      if (!map[bookId]) {
-        map[bookId] = {
-          activeBorrow: null,
-          lastReturned: null,
-        };
-      }
-
-      if (!borrow.returnDate) {
-        map[bookId].activeBorrow = borrow;
-      } else {
-        if (
-          !map[bookId].lastReturned ||
-          new Date(borrow.returnDate) >
-            new Date(map[bookId].lastReturned.returnDate)
-        ) {
-          map[bookId].lastReturned = borrow;
-        }
-      }
-    });
-
-    return map;
-  }, [allBorrowedBooks]);
-
-  /* ================= BORROW ================= */
-  const handleBorrow = (book) => {
-    setSelectedBook(book);
-    dispatch(toggleRecordBookPopup());
+    return Number((daysLate * finePerDay).toFixed(2));
   };
 
-  /* ================= RETURN ================= */
-  const handleReturnPopup = (borrow) => {
-    setSelectedBorrow(borrow);
-    dispatch(toggleReturnBookPopup());
-  };
+  /* ================= FILTER BORROWS ================= */
+  const filteredBorrows = useMemo(() => {
+    const key = search.toLowerCase();
+
+    return allBorrowedBooks?.filter(
+      (b) =>
+        b.book.title.toLowerCase().includes(key) ||
+        b.user.email.toLowerCase().includes(key)
+    );
+  }, [allBorrowedBooks, search]);
 
   /* ================= LOADING ================= */
   if (loading) {
     return (
       <>
         <Header />
-        <Loading/>
+        <Loading />
       </>
     );
   }
@@ -117,7 +108,6 @@ const Catalog = () => {
     <>
       <Header />
 
-      {/* ================= POPUPS ================= */}
       {recordBookPopup && selectedBook && (
         <RecordBookPopup book={selectedBook} />
       )}
@@ -129,22 +119,21 @@ const Catalog = () => {
       <main className="min-h-screen bg-gray-50 text-black pt-28 pb-14">
         <div className="max-w-7xl mx-auto px-6 space-y-12">
 
-          {/* ================= TITLE ================= */}
+          {/* TITLE */}
           <section className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <h1 className="text-4xl font-bold tracking-tight">
                 Library Catalog
               </h1>
               <p className="mt-2 text-gray-600 max-w-xl">
-                Borrow, return, and track book history.
+                All borrowed books (user-wise)
               </p>
             </div>
 
-            {/* SEARCH */}
             <div className="w-full md:w-80">
               <input
                 type="text"
-                placeholder="Search by title or author…"
+                placeholder="Search by book or email…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-black outline-none"
@@ -152,116 +141,66 @@ const Catalog = () => {
             </div>
           </section>
 
-          {/* ================= BOOK GRID ================= */}
+          {/* BORROW GRID */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBooks.map((book) => {
-              const record = borrowLookup[book._id] || {};
-              const activeBorrow = record.activeBorrow;
-              const lastReturned = record.lastReturned;
+            {filteredBorrows.map((borrow) => (
+              <div
+                key={borrow._id}
+                className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 flex flex-col justify-between transition hover:shadow-lg"
+              >
+                <div>
+                  <h3 className="text-lg font-semibold">
+                    {borrow.book.title}
+                  </h3>
 
-              return (
-                <div
-                  key={book._id}
-                  className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 flex flex-col justify-between transition hover:shadow-lg"
-                >
-                  {/* BOOK INFO */}
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {book.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      by {book.author}
+                  <p className="text-sm text-gray-500">
+                    Borrowed by {borrow.user.email}
+                  </p>
+
+                  <p className="mt-2 text-sm text-gray-600">
+                    Due date: {formatDate(borrow.dueDate)}
+                  </p>
+
+                  {!borrow.returnDate && (
+                    <p className="mt-2 font-semibold text-red-600">
+                      Fine: ₹{calculateLiveFine(borrow.dueDate)}
                     </p>
+                  )}
 
-                    {/* ACTIVE BORROW */}
-                    {activeBorrow && (
-                      <div className="mt-4 text-sm space-y-1 text-gray-600">
-                        <p>
-                          <span className="font-semibold">
-                            Borrowed by:
-                          </span>{" "}
-                          {activeBorrow.user.email}
-                        </p>
-                        <p>
-                          <span className="font-semibold">
-                            Due date:
-                          </span>{" "}
-                          {new Date(activeBorrow.dueDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* RETURNED INFO */}
-                    {!activeBorrow && lastReturned && (
-                      <div className="mt-4 text-sm space-y-1 text-gray-600">
-                        <p>
-                          <span className="font-semibold">
-                            Last returned on:
-                          </span>{" "}
-                          {new Date(
-                            lastReturned.returnDate
-                          ).toLocaleDateString()}
-                        </p>
-                        <p className="italic text-gray-500">
-                          Previously borrowed by{" "}
-                          {lastReturned.user.email}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* AVAILABLE */}
-                    {!activeBorrow && !lastReturned && (
-                      <>
-                        <p className="mt-4 text-xs text-gray-400 uppercase">
-                          Copies Available
-                        </p>
-                        <p className="text-sm font-semibold">
-                          {book.quantity}
-                        </p>
-                      </>
-                    )}
-                  </div>
-
-                  {/* FOOTER */}
-                  <div className="mt-6 flex items-center justify-between">
-                    {/* STATUS BADGE */}
-                    {activeBorrow ? (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                        <PiKeyReturnBold />
-                        Borrowed
-                      </span>
-                    ) : lastReturned ? (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                        <FaSquareCheck />
-                        Returned
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                        <FaSquareCheck />
-                        Available
-                      </span>
-                    )}
-
-                    {/* ACTION */}
-                    {activeBorrow ? (
-                      <button
-                        onClick={() => handleReturnPopup(activeBorrow)}
-                        className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-100"
-                      >
-                        Return
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleBorrow(book)}
-                        className="rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-900"
-                      >
-                        Borrow
-                      </button>
-                    )}
-                  </div>
+                  {borrow.returnDate && (
+                    <p className="mt-2 font-semibold text-green-600">
+                      Returned on {formatDate(borrow.returnDate)}
+                    </p>
+                  )}
                 </div>
-              );
-            })}
+
+                <div className="mt-6 flex items-center justify-between">
+                  {!borrow.returnDate ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
+                      <PiKeyReturnBold />
+                      Borrowed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                      <FaSquareCheck />
+                      Returned
+                    </span>
+                  )}
+
+                  {!borrow.returnDate && (
+                    <button
+                      onClick={() => {
+                        setSelectedBorrow(borrow);
+                        dispatch(toggleReturnBookPopup());
+                      }}
+                      className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-100"
+                    >
+                      Return
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </section>
         </div>
       </main>
