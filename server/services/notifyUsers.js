@@ -1,41 +1,37 @@
 import cron from "node-cron";
 import { Borrow } from "../models/borrowModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { generateBookReturnReminderEmailTemplate } from "../utils/emailTemplates.js";
 
 export const notifyUsers = () => {
-  
-
-  
-  cron.schedule("* */30 * * * *", async () => {
-    
-     try {
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  cron.schedule("*/30 * * * *", async () => {
+    try {
+      const now = new Date();
 
       const borrowers = await Borrow.find({
-        dueDate: { $lt: oneDayAgo },
+        dueDate: { $lt: now },
         returnDate: null,
         notified: false,
-      }).populate("user book");
+      });
 
-      
-
-      for (const element of borrowers) {
-        if (element.user?.email) {
+      for (const borrow of borrowers) {
+        if (borrow.user?.email) {
           await sendEmail({
-            email: element.user.email,
-            subject: "Reminder for returning borrowed book",
-            message: `Hello ${element.user.name},\n\nThis is a reminder that the book "${element.book.title}" you borrowed is due for return. 
-            Please return it to the library as soon as possible.\n\nThank you.`,
+            email: borrow.user.email,
+            subject: "📚 Reminder: Please return your borrowed book",
+            message: generateBookReturnReminderEmailTemplate({
+              userName: borrow.user.name,
+              bookTitle: borrow.book.title,
+              dueDate: new Date(borrow.dueDate).toLocaleDateString(),
+            }),
           });
 
-          element.notified = true;
-          await element.save();
-
-         
+          borrow.notified = true;
+          await borrow.save();
         }
       }
     } catch (error) {
-      console.error("❌ Error in notifying users:", error);
+      console.error("❌ Notify users error:", error);
     }
   });
 };

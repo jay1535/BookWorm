@@ -1,10 +1,18 @@
 export const calculateFine = (dueDate) => {
   const today = new Date();
-  const finePerHour = 0.1; // Fine amount per day
-  if(dueDate < today){
-    const letHours = Math.ceil((today-dueDate) / (1000 * 60 * 60 * 24));
-    const fine = letHours * finePerHour;
-    return fine;
+  const due = new Date(dueDate);
+
+  if (isNaN(due.getTime())) return 0;
+
+  const finePerDay = 5;  
+
+  if (due < today) {
+    const daysLate = Math.ceil(
+      (today.getTime() - due.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    return Number((daysLate * finePerDay).toFixed(2));
   }
-    return 0;
+
+  return 0;
 };

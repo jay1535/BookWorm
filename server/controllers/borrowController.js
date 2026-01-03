@@ -108,8 +108,10 @@ export const getBorrowedBooksForAdmin = catchAsyncErrors(
 /* =====================================================
    USER: RETURN BORROWED BOOK
 ===================================================== */
+
+
 export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.params; // borrowId
+  const { id } = req.params;
 
   const borrow = await Borrow.findById(id);
   if (!borrow) {
@@ -127,7 +129,7 @@ export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
   }
 
   book.quantity += 1;
-  book.availability = true;
+  book.availability = book.quantity > 0;
   await book.save();
 
   /* ===== CALCULATE FINE ===== */
@@ -135,6 +137,7 @@ export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
 
   borrow.returnDate = new Date();
   borrow.fine = fine;
+  borrow.notified = false;
   await borrow.save();
 
   res.status(200).json({
@@ -146,3 +149,4 @@ export const returnBorrowedBook = catchAsyncErrors(async (req, res, next) => {
     fine,
   });
 });
+

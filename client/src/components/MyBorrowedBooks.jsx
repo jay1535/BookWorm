@@ -23,10 +23,22 @@ const MyBorrowedBooks = () => {
   const [search, setSearch] = useState("");
   const [selectedBorrow, setSelectedBorrow] = useState(null);
 
+  /* 🔹 time trigger for live fine */
+  const [now, setNow] = useState(Date.now());
+
   /* ================= FETCH ================= */
   useEffect(() => {
     dispatch(fetchUserBorrowedBooks());
   }, [dispatch]);
+
+  /* 🔹 re-render every minute for live fine */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   /* ================= DATE ================= */
   const formatDate = (date) => {
@@ -34,10 +46,33 @@ const MyBorrowedBooks = () => {
     return new Date(date).toLocaleDateString();
   };
 
+  /* ================= LIVE FINE ================= */
+  const calculateLiveFine = (dueDate) => {
+    const today = new Date(now);
+    const due = new Date(dueDate);
+
+    if (due >= today) return 0;
+
+    const finePerDay = 5;
+    const daysLate = Math.ceil(
+      (today.getTime() - due.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    return Number((daysLate * finePerDay).toFixed(2));
+  };
+
+  const getFineAmount = (item) => {
+    if (item.returnDate) return item.fine ?? 0;
+    if (new Date(now) > new Date(item.dueDate)) {
+      return calculateLiveFine(item.dueDate);
+    }
+    return 0;
+  };
+
   /* ================= STATUS ================= */
   const getStatus = (item) => {
     if (item.returnDate) return "Returned";
-    if (new Date() > new Date(item.dueDate)) return "Overdue";
+    if (new Date(now) > new Date(item.dueDate)) return "Overdue";
     return "Active";
   };
 
@@ -84,7 +119,7 @@ const MyBorrowedBooks = () => {
     return (
       <>
         <Header />
-       <Loading/>
+        <Loading />
       </>
     );
   }
@@ -98,7 +133,7 @@ const MyBorrowedBooks = () => {
       )}
 
       <main className="flex h-full flex-col p-4 pt-28 bg-gray-50 text-black overflow-hidden">
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
@@ -109,43 +144,23 @@ const MyBorrowedBooks = () => {
             </p>
           </div>
 
-          <span
-            className="
-              self-start md:self-auto
-              inline-flex items-center
-              rounded-full
-              bg-black
-              px-3 py-1
-              text-xs
-              md:px-4 md:py-1.5 md:text-sm
-              font-medium text-white
-            "
-          >
+          <span className="self-start md:self-auto inline-flex items-center rounded-full bg-black px-3 py-1 text-xs md:px-4 md:py-1.5 md:text-sm font-medium text-white">
             Total: {filteredBorrowedBooks.length}
           </span>
         </header>
 
-        {/* ================= SEARCH ================= */}
+        {/* SEARCH */}
         <div className="mt-4 w-full max-w-xs md:max-w-sm">
           <input
             type="text"
             placeholder="Search by book name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="
-              w-full
-              rounded-lg
-              border border-gray-300
-              bg-white
-              px-3 py-1.5
-              text-xs
-              md:px-4 md:py-2 md:text-sm
-              focus:ring-2 focus:ring-black
-            "
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm focus:ring-2 focus:ring-black"
           />
         </div>
 
-        {/* ================= EMPTY ================= */}
+        {/* EMPTY */}
         {filteredBorrowedBooks.length === 0 && (
           <div className="mt-10 rounded-xl bg-white p-8 text-center shadow-md">
             <h3 className="text-lg font-semibold text-gray-800">
@@ -157,7 +172,7 @@ const MyBorrowedBooks = () => {
           </div>
         )}
 
-        {/* ================= MOBILE VIEW ================= */}
+        {/* MOBILE */}
         <div className="mt-6 space-y-4 md:hidden flex flex-col items-center overflow-y-auto">
           {filteredBorrowedBooks.map((item) => {
             const status = getStatus(item);
@@ -165,15 +180,7 @@ const MyBorrowedBooks = () => {
             return (
               <div
                 key={item._id}
-                className="
-                  w-[90%]
-                  max-w-sm
-                  rounded-2xl
-                  bg-white
-                  p-3
-                  shadow-sm
-                  border border-gray-200
-                "
+                className="w-[90%] max-w-sm rounded-2xl bg-white p-3 shadow-sm border border-gray-200"
               >
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
@@ -206,7 +213,7 @@ const MyBorrowedBooks = () => {
                   <div>
                     <p className="text-gray-500">Fine</p>
                     <p className="font-semibold text-gray-900">
-                      ₹{item.fine ?? 0}
+                      ₹{getFineAmount(item)}
                     </p>
                   </div>
                 </div>
@@ -214,20 +221,7 @@ const MyBorrowedBooks = () => {
                 {status === "Active" && (
                   <button
                     onClick={() => openReturnPopup(item)}
-                    className="
-                      mt-4
-                      w-full
-                      min-h-10.5
-                      rounded-lg
-                      bg-black
-                      px-4 py-2
-                      text-xs
-                      font-semibold
-                      text-white
-                      hover:bg-gray-900
-                      active:scale-[0.97]
-                      transition
-                    "
+                    className="mt-4 w-full min-h-10.5 rounded-lg bg-black px-4 py-2 text-xs font-semibold text-white hover:bg-gray-900 active:scale-[0.97] transition"
                   >
                     Return Book
                   </button>
@@ -237,7 +231,7 @@ const MyBorrowedBooks = () => {
           })}
         </div>
 
-        {/* ================= DESKTOP TABLE ================= */}
+        {/* DESKTOP */}
         {filteredBorrowedBooks.length > 0 && (
           <div className="hidden md:block mt-6 rounded-xl bg-white shadow-md">
             <div className="max-h-70 overflow-y-auto rounded-xl">
@@ -250,7 +244,6 @@ const MyBorrowedBooks = () => {
                     <th className="px-6 py-4">Due Date</th>
                     <th className="px-6 py-4 text-center">Status</th>
                     <th className="px-6 py-4 text-center">Fine</th>
-                    
                   </tr>
                 </thead>
 
@@ -284,9 +277,8 @@ const MyBorrowedBooks = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center font-semibold">
-                          ₹{item.fine ?? 0}
+                          ₹{getFineAmount(item)}
                         </td>
-                       
                       </tr>
                     );
                   })}

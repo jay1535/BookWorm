@@ -190,3 +190,89 @@ export function generateForgotPasswordEmailTemplate(resetPasswordUrl) {
 
 
 
+export function generateBookReturnReminderEmailTemplate({
+  userName,
+  bookTitle,
+  dueDate,
+}) {
+  return `
+  <div style="background:#f4f6f8;padding:40px 0;font-family:Arial,Helvetica,sans-serif;">
+    <div style="
+      max-width:600px;
+      margin:0 auto;
+      background:#ffffff;
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    ">
+
+      <!-- HEADER -->
+      <div style="background:#000000;padding:28px;text-align:center;">
+        <div style="font-size:42px;line-height:1;">📚</div>
+        <h1 style="
+          margin:8px 0 0;
+          font-size:22px;
+          color:#ffffff;
+          letter-spacing:0.6px;
+        ">
+          BookWorm Library
+        </h1>
+        <p style="margin:6px 0 0;color:#ffffffaa;font-size:14px;">
+          Book Return Reminder
+        </p>
+      </div>
+
+      <!-- BODY -->
+      <div style="padding:30px;color:#333333;font-size:15px;line-height:1.6;">
+        <p>Hello <strong>${userName}</strong>,</p>
+
+        <p>
+          This is a friendly reminder that the following book borrowed from
+          <strong>BookWorm Library</strong> is overdue:
+        </p>
+
+        <!-- BOOK INFO -->
+        <div style="
+          margin:20px 0;
+          padding:16px;
+          background:#f8f9fb;
+          border-radius:10px;
+        ">
+          <p style="margin:0;font-size:15px;">
+            📖 <strong>Book:</strong> ${bookTitle}
+          </p>
+          <p style="margin:6px 0 0;font-size:14px;">
+            ⏰ <strong>Due Date:</strong> ${dueDate}
+          </p>
+        </div>
+
+        <p>
+          Please return the book as soon as possible to avoid
+          <strong>additional fines</strong>.
+        </p>
+
+        <p>
+          If you’ve already returned this book, you can safely ignore this email.
+        </p>
+
+        <p style="margin-top:30px;">
+          Happy Reading,<br/>
+          <strong>BookWorm Library Team</strong>
+        </p>
+      </div>
+
+      <!-- FOOTER -->
+      <div style="
+        background:#fafafa;
+        padding:18px;
+        text-align:center;
+        font-size:12px;
+        color:#777777;
+      ">
+        © 2025 BookWorm Library. All rights reserved.
+      </div>
+
+    </div>
+  </div>
+  `;
+}
